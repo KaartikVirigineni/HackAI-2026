@@ -177,18 +177,6 @@ export default function CyberRegister() {
               </div>
             </div>
 
-            {/* T&C Checkbox */}
-            <div className="flex items-center gap-3 pt-2">
-              <input 
-                type="checkbox" 
-                id="terms"
-                required
-                className="w-4 h-4 rounded border-cyber-blue/30 bg-cyber-dark text-cyber-blue focus:ring-cyber-blue/50 focus:ring-offset-0 focus:ring-2 cursor-pointer appearance-none checked:bg-cyber-blue checked:border-transparent checked:before:content-['✓'] checked:before:text-cyber-dark checked:before:block checked:before:text-center checked:before:text-xs"
-              />
-              <label htmlFor="terms" className="text-xs text-cyber-blue/70 cursor-pointer select-none">
-                I agree to the <span className="text-cyber-blue hover:text-cyber-blue-glow transition-colors">Terms & Conditions</span>
-              </label>
-            </div>
 
             {/* Register Button */}
             <button 

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { LiveKitRoom, AudioConference } from "@livekit/components-react";
 import "@livekit/components-styles";
 
-export default function VoiceChat({ roomName = "cyberarena-room", username = "agent_" + Math.floor(Math.random() * 1000) }) {
+export default function VoiceChat({ roomName = "cyberarena-room", username: propUsername }: { roomName?: string, username?: string }) {
+  const [username] = useState(() => propUsername || "agent_" + Math.floor(Math.random() * 1000));
   const [token, setToken] = useState("");
 
   useEffect(() => {

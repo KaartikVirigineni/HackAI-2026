@@ -22,6 +22,14 @@ export function openDb() {
     )
   `);
 
+  try {
+    db.exec("ALTER TABLE users ADD COLUMN points INTEGER DEFAULT 0");
+  } catch(e) { /* Column already exists */ }
+  
+  try {
+    db.exec("ALTER TABLE users ADD COLUMN rank TEXT DEFAULT 'Recruit'");
+  } catch(e) { /* Column already exists */ }
+
   // @ts-expect-error - sqlite is not defined on global by default
   global.sqlite = db;
   cachedDb = db;

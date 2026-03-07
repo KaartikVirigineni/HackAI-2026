@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { loginAgent } from "@/app/actions/auth";
 
 export default function CyberLogin() {
+  const router = useRouter();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authText, setAuthText] = useState("");
   const [accessGranted, setAccessGranted] = useState(false);
@@ -25,17 +27,20 @@ export default function CyberLogin() {
       return;
     }
 
+    // Set user session in localStorage
+    const username = formData.get("username") as string;
+    localStorage.setItem("agentUsername", username);
+
     setAuthText("Scanning credentials...");
     setTimeout(() => {
       setAuthText("Access Granted ✅");
       setAccessGranted(true);
     }, 1500);
-    // Optional: reset after some time
+    
+    // Redirect after scanning
     setTimeout(() => {
-      setIsAuthenticating(false);
-      setAccessGranted(false);
-      setAuthText("");
-    }, 4500);
+      router.push("/home");
+    }, 3000);
   };
 
   return (

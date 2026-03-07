@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { registerAgent } from "@/app/actions/auth";
 
 export default function CyberRegister() {
+  const router = useRouter();
   const [isRegistering, setIsRegistering] = useState(false);
   const [authText, setAuthText] = useState("");
   const [accessGranted, setAccessGranted] = useState(false);
@@ -26,17 +28,20 @@ export default function CyberRegister() {
       return;
     }
 
+    // Set user session in localStorage
+    const username = formData.get("username") as string;
+    localStorage.setItem("agentUsername", username);
+
     setAuthText("Encrypting credentials...");
     setTimeout(() => {
       setAuthText("Access Granted ✅");
       setAccessGranted(true);
     }, 1500);
-    // Optional: reset after some time
+    
+    // Redirect after scanning
     setTimeout(() => {
-      setIsRegistering(false);
-      setAccessGranted(false);
-      setAuthText("");
-    }, 4500);
+      router.push("/home");
+    }, 3000);
   };
 
   return (

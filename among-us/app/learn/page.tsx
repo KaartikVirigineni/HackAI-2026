@@ -1,33 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import VoiceChat from "@/app/voiceChat";
-
-const QUESTIONS = [
-  "What is the difference between symmetric and asymmetric encryption?",
-  "How does a buffer overflow attack work?",
-  "Explain the principle of least privilege.",
-  "What are the main differences between TCP and UDP?",
-  "How can you mitigate Cross-Site Scripting (XSS) vulnerabilities?",
-  "What is the purpose of a firewall?",
-  "Describe the CIA triad in cybersecurity.",
-  "What is a Zero-Day vulnerability?",
-  "Explain how phishing attacks are executed.",
-  "What is multi-factor authentication and why is it important?",
-];
-
+import { generateCyberQuestion } from "@/app/actions/gemini";
 export default function LearnPage() {
-  const [currentQuestion, setCurrentQuestion] = useState(
-    () => QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)]
-  );
+  const [currentQuestion, setCurrentQuestion] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const generateNewQuestion = () => {
-    let nextIndex = Math.floor(Math.random() * QUESTIONS.length);
-    while (QUESTIONS[nextIndex] === currentQuestion) {
-      nextIndex = Math.floor(Math.random() * QUESTIONS.length);
-    }
-    setCurrentQuestion(QUESTIONS[nextIndex]);
+  useEffect(() => {
+    const loadInitialQuestion = async () => {
+      const q = await generateCyberQuestion();
+      setCurrentQuestion(q);
+      setIsLoading(false);
+    };
+    loadInitialQuestion();
+  }, []);
+
+  const generateNewQuestion = async () => {
+    setIsLoading(true);
+    const q = await generateCyberQuestion();
+    setCurrentQuestion(q);
+    setIsLoading(false);
   };
 
   return (
@@ -92,9 +86,16 @@ export default function LearnPage() {
               </div>
 
               <div className="flex-1 flex items-center justify-center py-10 relative z-10">
-                <p suppressHydrationWarning className="text-3xl md:text-4xl lg:text-5xl font-inter text-center leading-tight text-white font-semibold">
-                  {currentQuestion}
-                </p>
+                {isLoading ? (
+                  <div className="flex flex-col items-center gap-4">
+                    <span className="animate-spin h-10 w-10 border-4 border-cyber-green border-t-transparent rounded-full"></span>
+                    <p className="text-cyber-green animate-pulse font-orbitron tracking-widest uppercase text-sm">Contacting HQ...</p>
+                  </div>
+                ) : (
+                  <p suppressHydrationWarning className="text-3xl md:text-4xl lg:text-5xl font-inter text-center leading-tight text-white font-semibold">
+                    {currentQuestion}
+                  </p>
+                )}
               </div>
               
               <div className="mt-8 pt-6 border-t border-cyber-green/20 flex items-center justify-center gap-3 text-sm text-cyber-green/70 font-mono tracking-wider relative z-10">

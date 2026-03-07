@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function CyberLogin() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -143,9 +144,9 @@ export default function CyberLogin() {
             <div className="text-center pt-4 border-t border-cyber-blue/10">
               <p className="text-sm text-cyber-blue/60">
                 New agent?{" "}
-                <a href="#" className="text-cyber-blue hover:text-cyber-blue-glow font-semibold transition-colors">
+                <Link href="/register" className="text-cyber-blue hover:text-cyber-blue-glow font-semibold transition-colors">
                   Create an account
-                </a>
+                </Link>
               </p>
             </div>
           </form>

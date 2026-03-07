@@ -138,7 +138,10 @@ export default function CyberHome() {
         <div className="flex justify-center mb-20 relative">
           <div className="absolute inset-0 bg-cyber-blue rounded-full filter blur-[100px] opacity-10 animate-pulse w-64 h-64 mx-auto top-1/2 -translate-y-1/2"></div>
           
-          <button className="relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-blue p-8 sm:p-12 transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(0,243,255,0.4)] duration-300">
+          <button 
+            onClick={() => router.push('/learn')}
+            className="relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-blue p-8 sm:p-12 transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(0,243,255,0.4)] duration-300"
+          >
             <div className="absolute inset-0 bg-gradient-to-br from-cyber-blue/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             
             <div className="relative z-10 flex flex-col items-center gap-4">

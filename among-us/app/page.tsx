@@ -4,8 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginAgent } from "@/app/actions/auth";
-import VoiceChat from "./voiceChat";
-
 export default function CyberLogin() {
   const router = useRouter();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -65,11 +63,6 @@ export default function CyberLogin() {
 
       {/* Main Login Panel */}
       <main className="relative z-10 w-full max-w-md p-8 sm:p-10 mx-4 border border-cyber-blue-dim bg-cyber-darker/80 backdrop-blur-xl rounded-2xl shadow-[0_0_50px_rgba(0,243,255,0.05)] before:absolute before:inset-0 before:rounded-2xl before:border before:border-cyber-blue/20 before:pointer-events-none">
-        
-        {/* Voice Chat Component Inject */}
-        <div className="mb-8">
-          <VoiceChat />
-        </div>
         
         {/* Header / Logo */}
         <div className="text-center mb-10">

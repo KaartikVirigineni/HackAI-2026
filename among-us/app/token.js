@@ -1,4 +1,4 @@
-const { AccessToken } = require("livekit-server-sdk");
+import { AccessToken } from "livekit-server-sdk";
 
 // Reading configuration from your .env automatically
 const apiKey = process.env.LIVEKIT_API_KEY;

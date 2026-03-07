@@ -2,29 +2,40 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { loginAgent } from "@/app/actions/auth";
 
 export default function CyberLogin() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authText, setAuthText] = useState("");
   const [accessGranted, setAccessGranted] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsAuthenticating(true);
     setAuthText("Authenticating...");
+    setError("");
 
-    // Simulated auth sequence
-    setTimeout(() => setAuthText("Scanning credentials..."), 1500);
+    const formData = new FormData(e.target as HTMLFormElement);
+    const result = await loginAgent(formData);
+
+    if (result.error) {
+      setError(result.error);
+      setIsAuthenticating(false);
+      return;
+    }
+
+    setAuthText("Scanning credentials...");
     setTimeout(() => {
       setAuthText("Access Granted ✅");
       setAccessGranted(true);
-    }, 3000);
+    }, 1500);
     // Optional: reset after some time
     setTimeout(() => {
       setIsAuthenticating(false);
       setAccessGranted(false);
       setAuthText("");
-    }, 5000);
+    }, 4500);
   };
 
   return (
@@ -91,6 +102,12 @@ export default function CyberLogin() {
           </div>
         ) : (
           <form onSubmit={handleLogin} className="space-y-6">
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/50 text-red-400 text-sm p-3 rounded-lg text-center font-orbitron">
+                {error}
+              </div>
+            )}
+            
             {/* Username Input */}
             <div className="space-y-2">
               <label className="block text-xs font-orbitron tracking-widest text-cyber-blue/80 uppercase">
@@ -99,6 +116,7 @@ export default function CyberLogin() {
               <div className="relative group">
                 <input 
                   type="text" 
+                  name="username"
                   required
                   className="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded-lg px-4 py-3 text-cyber-blue placeholder-cyber-blue/30 focus:outline-none focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition-all duration-300 font-mono"
                   placeholder="Enter your username..."
@@ -120,6 +138,7 @@ export default function CyberLogin() {
               <div className="relative group">
                 <input 
                   type="password" 
+                  name="password"
                   required
                   className="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded-lg px-4 py-3 text-cyber-blue placeholder-cyber-blue/30 focus:outline-none focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition-all duration-300 font-mono"
                   placeholder="••••••••••••"

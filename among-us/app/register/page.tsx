@@ -3,28 +3,40 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { registerAgent } from "@/app/actions/auth";
+
 export default function CyberRegister() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [authText, setAuthText] = useState("");
   const [accessGranted, setAccessGranted] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsRegistering(true);
     setAuthText("Registering Agent...");
+    setError("");
 
-    // Simulated registration sequence
-    setTimeout(() => setAuthText("Encrypting credentials..."), 1500);
+    const formData = new FormData(e.target as HTMLFormElement);
+    const result = await registerAgent(formData);
+
+    if (result.error) {
+      setError(result.error);
+      setIsRegistering(false);
+      return;
+    }
+
+    setAuthText("Encrypting credentials...");
     setTimeout(() => {
       setAuthText("Access Granted ✅");
       setAccessGranted(true);
-    }, 3000);
+    }, 1500);
     // Optional: reset after some time
     setTimeout(() => {
       setIsRegistering(false);
       setAccessGranted(false);
       setAuthText("");
-    }, 5000);
+    }, 4500);
   };
 
   return (
@@ -91,6 +103,12 @@ export default function CyberRegister() {
           </div>
         ) : (
           <form onSubmit={handleRegister} className="space-y-5">
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/50 text-red-400 text-sm p-3 rounded-lg text-center font-orbitron">
+                {error}
+              </div>
+            )}
+            
             {/* Username Input */}
             <div className="space-y-1 sm:space-y-2">
               <label className="block text-xs font-orbitron tracking-widest text-cyber-blue/80 uppercase">
@@ -99,6 +117,7 @@ export default function CyberRegister() {
               <div className="relative group">
                 <input 
                   type="text" 
+                  name="username"
                   required
                   className="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded-lg px-4 py-2.5 sm:py-3 text-cyber-blue placeholder-cyber-blue/30 focus:outline-none focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition-all duration-300 font-mono text-sm"
                   placeholder="agent_name"
@@ -115,6 +134,7 @@ export default function CyberRegister() {
               <div className="relative group">
                 <input 
                   type="email" 
+                  name="email"
                   required
                   className="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded-lg px-4 py-2.5 sm:py-3 text-cyber-blue placeholder-cyber-blue/30 focus:outline-none focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition-all duration-300 font-mono text-sm"
                   placeholder="agent@cyberarena.net"
@@ -131,6 +151,7 @@ export default function CyberRegister() {
               <div className="relative group">
                 <input 
                   type="password" 
+                  name="password"
                   required
                   className="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded-lg px-4 py-2.5 sm:py-3 text-cyber-blue placeholder-cyber-blue/30 focus:outline-none focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition-all duration-300 font-mono text-sm"
                   placeholder="••••••••••••"
@@ -147,6 +168,7 @@ export default function CyberRegister() {
               <div className="relative group">
                 <input 
                   type="password" 
+                  name="confirmPassword"
                   required
                   className="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded-lg px-4 py-2.5 sm:py-3 text-cyber-blue placeholder-cyber-blue/30 focus:outline-none focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition-all duration-300 font-mono text-sm"
                   placeholder="••••••••••••"

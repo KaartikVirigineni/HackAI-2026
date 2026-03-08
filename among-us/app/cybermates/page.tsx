@@ -257,8 +257,21 @@ export default function PhishingPier() {
       setJoined(true);
     });
 
+    if (!audioRef.current) {
+      audioRef.current = new GameAudio();
+    }
+
+    // Web Audio API requires a user gesture to resume a suspended AudioContext
+    const handleUserGesture = () => {
+       audioRef.current?.resume();
+    };
+    window.addEventListener('pointerdown', handleUserGesture, { once: true });
+    window.addEventListener('keydown', handleUserGesture, { once: true });
+
     if (canvasRef.current) {
-      engineRef.current = new GameEngine(canvasRef.current, newSocket);
+      engineRef.current = new GameEngine(canvasRef.current, newSocket, (isMoving) => {
+        audioRef.current?.tickMovement(isMoving);
+      });
       engineRef.current.start();
     }
 
@@ -274,7 +287,11 @@ export default function PhishingPier() {
     }
 
     return () => {
+      window.removeEventListener('pointerdown', handleUserGesture);
+      window.removeEventListener('keydown', handleUserGesture);
       engineRef.current?.stop();
+      audioRef.current?.destroy();
+      audioRef.current = null;
       newSocket.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

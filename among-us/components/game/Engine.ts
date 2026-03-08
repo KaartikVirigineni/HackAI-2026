@@ -24,9 +24,10 @@ export class GameEngine {
     obstacles?: {x: number, y: number, w: number, h: number}[];
     table?: {x: number, y: number, w: number, h: number};
   } | null = null;
+  onMove?: (isMoving: boolean) => void;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(canvas: HTMLCanvasElement, socket: any) {
+  constructor(canvas: HTMLCanvasElement, socket: any, onMove?: (isMoving: boolean) => void) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
     this.socket = socket;
@@ -37,6 +38,7 @@ export class GameEngine {
     this.animationFrameId = null;
     this.localPlayerId = socket ? socket.id || null : null;
     this.renderer = new Renderer(this.ctx, canvas.width, canvas.height);
+    this.onMove = onMove;
 
     if (this.socket) {
       this.socket.on('connect', () => {
@@ -155,7 +157,12 @@ export class GameEngine {
       dy = (dy / length) * this.speed;
     }
 
-    if (dx !== 0 || dy !== 0) {
+    const isMoving = dx !== 0 || dy !== 0;
+    if (this.onMove) {
+      this.onMove(isMoving);
+    }
+
+    if (isMoving) {
       const localP = this.players[this.localPlayerId];
       const pSize = 15;
 

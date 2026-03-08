@@ -43,12 +43,12 @@ export default function LearnPage() {
   useEffect(() => {
     if (socket && !lobbyActive) {
       socket.emit('join_global_room', roomName);
-      
+
       const onFlashcardSync = (data: { flashcard: Flashcard, reveal: boolean }) => {
         setFlashcard(data.flashcard);
         setIsAnswerRevealed(data.reveal);
       };
-      
+
       socket.on('flashcard_sync', onFlashcardSync);
       return () => { socket.off('flashcard_sync', onFlashcardSync); };
     }
@@ -66,7 +66,7 @@ export default function LearnPage() {
       const data = await response.json();
       setFlashcard(data);
       if (socket && !lobbyActive) {
-         socket.emit('broadcast_flashcard', { roomId: roomName, flashcard: data, reveal: false });
+        socket.emit('broadcast_flashcard', { roomId: roomName, flashcard: data, reveal: false });
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Encryption mismatch error");
@@ -251,8 +251,8 @@ export default function LearnPage() {
 
             {/* Render flashcards when we are not in the lobby */}
             {!lobbyActive && (
-              <InteractiveLearnSession 
-                flashcard={flashcard} 
+              <InteractiveLearnSession
+                flashcard={flashcard}
                 setFlashcard={setFlashcard}
                 isAnswerRevealed={isAnswerRevealed}
                 setIsAnswerRevealed={setIsAnswerRevealed}
@@ -294,120 +294,132 @@ function InteractiveLearnSession({
     <div className="bg-cyber-darker/60 border border-cyber-green/30 rounded-2xl p-8 backdrop-blur-xl shadow-[0_0_50px_rgba(0,255,100,0.05)] relative overflow-hidden group min-h-[400px] transition-all duration-700 mt-8">
       <div className="absolute top-0 right-0 w-64 h-64 bg-cyber-green/10 rounded-full mix-blend-screen filter blur-[80px] pointer-events-none group-hover:bg-cyber-green/20 transition-all duration-700"></div>
 
-              <div className="flex justify-between items-center mb-8 border-b border-cyber-green/20 pb-6 relative z-10">
-                <h2 className="text-2xl font-orbitron font-bold text-cyber-green tracking-wider uppercase flex items-center gap-3 text-glow-green">
-                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-                  Intelligence Briefing
-                </h2>
-                <button
-                  onClick={() => fetchLesson()}
+      <div className="flex justify-between items-center mb-8 border-b border-cyber-green/20 pb-6 relative z-10">
+        <h2 className="text-2xl font-orbitron font-bold text-cyber-green tracking-wider uppercase flex items-center gap-3 text-glow-green">
+          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+          Intelligence Briefing
+        </h2>
+        <button
+          onClick={() => fetchLesson()}
+          onMouseEnter={playHover}
+          className="bg-cyber-dark border border-cyber-green text-cyber-green px-5 py-2.5 rounded-lg font-orbitron text-sm font-bold uppercase tracking-wider hover:bg-cyber-green hover:text-cyber-dark hover:box-glow-green shadow-[0_0_15px_rgba(0,255,100,0.1)] transition-all duration-300 flex items-center gap-2"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+          Generate Intel
+        </button>
+      </div>
+
+      <div className="relative z-10">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-6">
+            <div className="relative w-24 h-24 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-t-2 border-b-2 border-cyber-green animate-spin"></div>
+              <div className="absolute inset-2 rounded-full border-r-2 border-l-2 border-cyber-blue animate-spin animate-reverse"></div>
+              <span className="text-3xl text-cyber-green text-glow-green animate-pulse">📡</span>
+            </div>
+            <p className="text-cyber-green animate-pulse font-orbitron tracking-widest uppercase text-sm">Intercepting Phishing Intel...</p>
+          </div>
+        ) : error ? (
+          <div className="bg-red-500/10 border border-red-500/50 rounded-xl p-8 text-center backdrop-blur-lg">
+            <span className="text-4xl mb-4 block">⚠️</span>
+            <h2 className="font-orbitron text-red-500 font-bold tracking-widest uppercase mb-2">Decryption Failed</h2>
+            <p className="text-red-400 text-sm">{error}</p>
+          </div>
+        ) : flashcard ? (
+          <article className="space-y-10 animate-fade-in-up">
+            <header className="mb-8 border-b border-cyber-blue/30 pb-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-cyber-blue font-orbitron font-bold uppercase tracking-widest text-sm bg-cyber-blue/10 px-3 py-1 rounded">
+                  {flashcard.topic}
+                </span>
+                <span className={`font-mono text-xs font-bold uppercase ${flashcard.difficulty === 'Advanced' ? 'text-red-500' : flashcard.difficulty === 'Intermediate' ? 'text-yellow-500' : 'text-green-500'}`}>
+                  [{flashcard.difficulty}]
+                </span>
+              </div>
+              <h1 className="text-2xl font-bold font-inter text-white line-clamp-3">
+                {flashcard.question}
+              </h1>
+            </header>
+
+            <div className="space-y-6">
+              {!isAnswerRevealed ? (
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleRevealAnswer}
+                    onMouseEnter={playHover}
+                    className="bg-cyber-blue/20 hover:bg-cyber-blue border border-cyber-blue text-cyber-blue hover:text-black py-3 px-8 rounded-lg font-orbitron font-bold uppercase tracking-wider transition-all"
+                  >
+                    Reveal Intel
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-[#050A1F] p-8 rounded-xl border border-cyber-green/50 shadow-[0_0_20px_rgba(0,255,100,0.1)] relative">
+                  <h3 className="text-cyber-green font-orbitron text-xs font-bold uppercase tracking-[0.2em] mb-4">Classified Answer:</h3>
+                  <p className="text-gray-200 leading-relaxed text-lg">
+                    {formatText(flashcard.answer)}
+                  </p>
+
+                  <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-cyber-green/20">
+                    <button
+                      onClick={() => fetchLesson('down')}
+                      title="Too Hard - Make it Easier"
+                      className="text-gray-400 hover:text-red-500 hover:bg-red-500/10 p-3 rounded-full transition-colors flex items-center gap-2 font-orbitron text-xs font-bold uppercase"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" /></svg>
+                      Easier
+                    </button>
+                    <button
+                      onClick={() => fetchLesson('up')}
+                      title="Too Easy - Make it Harder"
+                      className="text-gray-400 hover:text-green-500 hover:bg-green-500/10 p-3 rounded-full transition-colors flex items-center gap-2 font-orbitron text-xs font-bold uppercase"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" /></svg>
+                      Harder
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </article>
+        ) : null}
+
+        {/* Transition to Trivia Module */}
+        {!loading && !error && flashcard && (
+          <div className="mt-16 pt-12 border-t border-cyber-blue/20 relative animate-fade-in-up">
+            <div className="absolute -top-px left-1/2 -translate-x-1/2 w-64 h-px bg-linear-to-r from-transparent via-cyber-blue to-transparent"></div>
+            <div className="text-center space-y-6 bg-cyber-dark/80 backdrop-blur-md p-8 sm:p-12 rounded-2xl border border-cyber-blue/40 shadow-[0_0_30px_rgba(0,243,255,0.05)]">
+              <h2 className="text-2xl sm:text-3xl font-orbitron font-bold text-white uppercase tracking-widest text-glow-blue">
+                Training Complete
+              </h2>
+              <p className="text-cyber-green/80 text-lg max-w-2xl mx-auto">
+                You&apos;ve absorbed the intelligence. Now, test your reaction time and knowledge under pressure in the Live Fire Trivia Simulation.
+              </p>
+              <div className="pt-4">
+                <Link
+                  href="/trivia"
                   onMouseEnter={playHover}
-                  className="bg-cyber-dark border border-cyber-green text-cyber-green px-5 py-2.5 rounded-lg font-orbitron text-sm font-bold uppercase tracking-wider hover:bg-cyber-green hover:text-cyber-dark hover:box-glow-green shadow-[0_0_15px_rgba(0,255,100,0.1)] transition-all duration-300 flex items-center gap-2"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-cyber-blue/10 border-2 border-cyber-blue text-cyber-blue font-orbitron font-bold tracking-widest uppercase rounded-lg hover:bg-cyber-blue hover:text-cyber-dark hover:box-glow-blue transition-all duration-300 group"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                  Generate Intel
-                </button>
+                  Initiate Trivia Protocol
+                  <svg className="w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                </Link>
               </div>
+            </div>
+          </div>
+        )}
 
-              <div className="relative z-10">
-                {loading ? (
-                  <div className="flex flex-col items-center justify-center py-20 gap-6">
-                    <div className="relative w-24 h-24 flex items-center justify-center">
-                      <div className="absolute inset-0 rounded-full border-t-2 border-b-2 border-cyber-green animate-spin"></div>
-                      <div className="absolute inset-2 rounded-full border-r-2 border-l-2 border-cyber-blue animate-spin animate-reverse"></div>
-                      <span className="text-3xl text-cyber-green text-glow-green animate-pulse">📡</span>
-                    </div>
-                    <p className="text-cyber-green animate-pulse font-orbitron tracking-widest uppercase text-sm">Intercepting Phishing Intel...</p>
-                  </div>
-                ) : error ? (
-                  <div className="bg-red-500/10 border border-red-500/50 rounded-xl p-8 text-center backdrop-blur-lg">
-                    <span className="text-4xl mb-4 block">⚠️</span>
-                    <h2 className="font-orbitron text-red-500 font-bold tracking-widest uppercase mb-2">Decryption Failed</h2>
-                    <p className="text-red-400 text-sm">{error}</p>
-                  </div>
-                ) : flashcard ? (
-                  <article className="space-y-10 animate-fade-in-up">
-                    <header className="mb-8 border-b border-cyber-blue/30 pb-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-cyber-blue font-orbitron font-bold uppercase tracking-widest text-sm bg-cyber-blue/10 px-3 py-1 rounded">
-                          {flashcard.topic}
-                        </span>
-                        <span className={`font-mono text-xs font-bold uppercase ${flashcard.difficulty === 'Advanced' ? 'text-red-500' : flashcard.difficulty === 'Intermediate' ? 'text-yellow-500' : 'text-green-500'}`}>
-                          [{flashcard.difficulty}]
-                        </span>
-                      </div>
-                      <h1 className="text-2xl font-bold font-inter text-white line-clamp-3">
-                        {flashcard.question}
-                      </h1>
-                    </header>
-
-                    <div className="space-y-6">
-                      {!isAnswerRevealed ? (
-                        <div className="flex justify-center">
-                          <button
-                            onClick={handleRevealAnswer}
-                            onMouseEnter={playHover}
-                            className="bg-cyber-blue/20 hover:bg-cyber-blue border border-cyber-blue text-cyber-blue hover:text-black py-3 px-8 rounded-lg font-orbitron font-bold uppercase tracking-wider transition-all"
-                          >
-                            Reveal Intel
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="bg-[#050A1F] p-8 rounded-xl border border-cyber-green/50 shadow-[0_0_20px_rgba(0,255,100,0.1)] relative">
-                          <h3 className="text-cyber-green font-orbitron text-xs font-bold uppercase tracking-[0.2em] mb-4">Classified Answer:</h3>
-                          <p className="text-gray-200 leading-relaxed text-lg">
-                            {formatText(flashcard.answer)}
-                          </p>
-                          
-                          <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-cyber-green/20">
-                            <button
-                              onClick={() => fetchLesson('down')}
-                              title="Too Hard - Make it Easier"
-                              className="text-gray-400 hover:text-red-500 hover:bg-red-500/10 p-3 rounded-full transition-colors flex items-center gap-2 font-orbitron text-xs font-bold uppercase"
-                            >
-                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" /></svg>
-                              Easier
-                            </button>
-                            <button
-                              onClick={() => fetchLesson('up')}
-                              title="Too Easy - Make it Harder"
-                              className="text-gray-400 hover:text-green-500 hover:bg-green-500/10 p-3 rounded-full transition-colors flex items-center gap-2 font-orbitron text-xs font-bold uppercase"
-                            >
-                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" /></svg>
-                              Harder
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </article>
-                ) : null}
-
-                {/* Transition to Trivia Module */}
-                {!loading && !error && flashcard && (
-                  <div className="mt-16 pt-12 border-t border-cyber-blue/20 relative animate-fade-in-up">
-                    <div className="absolute -top-px left-1/2 -translate-x-1/2 w-64 h-px bg-linear-to-r from-transparent via-cyber-blue to-transparent"></div>
-                    <div className="text-center space-y-6 bg-cyber-dark/80 backdrop-blur-md p-8 sm:p-12 rounded-2xl border border-cyber-blue/40 shadow-[0_0_30px_rgba(0,243,255,0.05)]">
-                      <h2 className="text-2xl sm:text-3xl font-orbitron font-bold text-white uppercase tracking-widest text-glow-blue">
-                        Training Complete
-                      </h2>
-                      <p className="text-cyber-green/80 text-lg max-w-2xl mx-auto">
-                        You&apos;ve absorbed the intelligence. Now, test your reaction time and knowledge under pressure in the Live Fire Trivia Simulation.
-                      </p>
-                      <div className="pt-4">
-                        <Link
-                          href="/trivia"
-                          onMouseEnter={playHover}
-                          className="inline-flex items-center gap-3 px-8 py-4 bg-cyber-blue/10 border-2 border-cyber-blue text-cyber-blue font-orbitron font-bold tracking-widest uppercase rounded-lg hover:bg-cyber-blue hover:text-cyber-dark hover:box-glow-blue transition-all duration-300 group"
-                        >
-                          Initiate Trivia Protocol
-                          <svg className="w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+        {/* Global Return Home Button */}
+        <div className="mt-12 flex justify-center pb-10">
+          <Link
+            href="/home"
+            onMouseEnter={playHover}
+            className="flex items-center gap-3 px-6 py-3 bg-cyber-darker border border-cyber-blue/40 text-cyber-blue font-orbitron text-xs font-bold tracking-[0.2em] uppercase rounded-xl hover:bg-cyber-blue hover:text-cyber-dark hover:box-glow-blue transition-all duration-300 group shadow-[0_0_20px_rgba(0,243,255,0.05)]"
+          >
+            <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+            Return to Command Center
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

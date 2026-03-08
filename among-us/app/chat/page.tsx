@@ -222,6 +222,18 @@ export default function ChatPage() {
                   {error}
                </div>
             )}
+
+            {/* Global Return Home Button */}
+            <div className="mt-auto pt-6 border-t border-cyber-green/20">
+              <Link 
+                href="/home" 
+                onMouseEnter={playHover}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-cyber-darker border border-cyber-green/30 text-cyber-green font-orbitron text-[10px] font-bold tracking-[0.2em] uppercase rounded-xl hover:bg-cyber-green hover:text-cyber-dark hover:box-glow-green transition-all duration-300 group"
+              >
+                <svg className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                Return to Home
+              </Link>
+            </div>
          </div>
 
          {/* Main Chat Area */}

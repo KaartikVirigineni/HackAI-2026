@@ -222,6 +222,12 @@ export default function PhishingPier() {
         )}
 
         <button onClick={() => window.location.reload()} className="mt-8 bg-cyber-dark border border-cyber-green p-4 rounded hover:bg-cyber-darker text-cyber-green transition-colors pointer-events-auto">Play Again</button>
+        <button 
+          onClick={() => window.location.href = '/home'} 
+          className="mt-4 bg-cyber-darker border border-cyber-blue p-4 rounded hover:bg-cyber-dark text-cyber-blue transition-colors pointer-events-auto font-bold uppercase tracking-widest text-sm"
+        >
+          Return to Command Center
+        </button>
       </div>
     );
   }
@@ -310,6 +316,13 @@ export default function PhishingPier() {
               className={`w-full font-bold py-3 rounded shadow-md transition-all ease-in-out ${!teamCode ? 'bg-cyber-dark text-gray-500 border-gray-600 cursor-not-allowed' : 'bg-cyber-dark border border-cyber-green hover:bg-cyber-darker text-cyber-green box-glow-green'}`}
             >
               JOIN TEAM
+            </button>
+            <button 
+              onClick={() => window.location.href = '/home'}
+              className="w-full mt-6 py-2 text-cyber-blue/60 hover:text-cyber-blue text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+              ABORT OPERATION & RETURN HOME
             </button>
           </div>
         </div>

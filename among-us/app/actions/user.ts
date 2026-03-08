@@ -38,3 +38,40 @@ export async function getLeaderboard() {
     return { error: "Failed to fetch leaderboard" };
   }
 }
+
+export async function updateUserPoints(username: string, earnedPoints: number) {
+  try {
+    await connectToDatabase();
+    
+    // Find the user to get current points
+    const user = await User.findOne({ username });
+    if (!user) {
+      return { error: "User not found" };
+    }
+    
+    const newPoints = (user.points || 0) + earnedPoints;
+    
+    // Calculate new rank
+    let newRank = "Recruit";
+    if (newPoints >= 50000) newRank = "Ghost Protocol";
+    else if (newPoints >= 30000) newRank = "Elite Sentinel";
+    else if (newPoints >= 15000) newRank = "Cyber Agent";
+    else if (newPoints >= 5000) newRank = "Operative";
+    else if (newPoints >= 1000) newRank = "Specialist";
+    
+    await User.updateOne(
+      { username },
+      { 
+        $set: { 
+          points: newPoints,
+          rank: newRank
+        } 
+      }
+    );
+    
+    return { success: true, newPoints, newRank };
+  } catch (error: unknown) {
+    console.error("Update points error:", error);
+    return { error: "Failed to update user points" };
+  }
+}

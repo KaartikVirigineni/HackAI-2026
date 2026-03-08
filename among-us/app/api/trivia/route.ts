@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { ai } from "@/app/lib/gemini";
+import { checkApiKey, generateJsonContent } from "@/app/lib/aiProvider";
 
 export async function GET() {
-  if (!process.env.GEMINI_API_KEY) {
-    return NextResponse.json({ error: "Missing GEMINI_API_KEY environment variable" }, { status: 500 });
-  }
+  const authError = await checkApiKey();
+  if (authError) return authError;
 
   try {
 
@@ -30,14 +29,7 @@ export async function GET() {
       Generate exactly 5 question objects in this array format.
     `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      }
-    });
-    const text = response.text;
+    const text = await generateJsonContent(prompt);
 
     return new NextResponse(text, {
       status: 200,

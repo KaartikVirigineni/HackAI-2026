@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { ai } from "@/app/lib/gemini";
+import { checkApiKey, generateJsonContent } from "@/app/lib/aiProvider";
 
 export async function GET() {
-  if (!process.env.GEMINI_API_KEY) {
-    return NextResponse.json({ error: "Missing GEMINI_API_KEY environment variable" }, { status: 500 });
-  }
+  const authError = await checkApiKey();
+  if (authError) return authError;
 
   try {
 
@@ -41,14 +40,7 @@ export async function GET() {
       Generate exactly 5 content blocks, and exactly 3 discussion questions. Put question 1 after block 1, question 2 after block 3, and question 3 after block 5.
     `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      }
-    });
-    const text = response.text;
+    const text = await generateJsonContent(prompt);
 
     return new NextResponse(text, {
       status: 200,

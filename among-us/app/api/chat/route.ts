@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { ai } from "@/app/lib/gemini";
+import { ai, checkApiKey, model } from "@/app/lib/aiProvider";
 
 export async function POST(req: Request) {
-  if (!process.env.GEMINI_API_KEY) {
-    return NextResponse.json({ error: "Missing GEMINI_API_KEY environment variable" }, { status: 500 });
-  }
+  const authError = await checkApiKey();
+  if (authError) return authError;
 
   try {
     const { history, prompt, syllabusContext } = await req.json();
@@ -27,7 +26,7 @@ export async function POST(req: Request) {
            Help the agent learn cybersecurity concepts. Be encouraging, highly knowledgeable, and use a slight cyberpunk/hacker tone.`;
 
     const chat = ai.chats.create({
-      model: "gemini-2.5-flash",
+      model,
       config: {
         systemInstruction,
       },

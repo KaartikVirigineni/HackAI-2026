@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  LiveKitRoom, 
-  ParticipantLoop, 
+import {
+  LiveKitRoom,
+  ParticipantLoop,
   ParticipantTile,
   ControlBar,
   RoomAudioRenderer,
   useTracks,
   ConnectionState,
-  ParticipantContext
+  ParticipantContext,
+  TrackToggle,
+  DisconnectButton
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
 import "@livekit/components-styles";
@@ -57,7 +59,7 @@ export default function VoiceChat({ roomName = "cyberarena-room", username: prop
             <span className="text-[10px] font-orbitron text-cyber-blue/50 uppercase">Room: {roomName.split('-').pop()}</span>
             <ConnectionState className="text-[10px] font-orbitron text-cyber-green" />
           </div>
-          <button 
+          <button
             onClick={() => {
               setToken("");
               setTokenVersion(v => v + 1);
@@ -76,9 +78,15 @@ export default function VoiceChat({ roomName = "cyberarena-room", username: prop
 
         {/* Compact Controls */}
         <div className="mt-auto pt-2 border-t border-cyber-blue/10">
-          <ControlBar 
-            variation="minimal" 
-            controls={{ microphone: true, screenShare: false, camera: false, chat: false, leave: true }} 
+          <ControlBar
+            variation="minimal"
+            controls={{
+              microphone: true,
+              screenShare: false,
+              camera: false,
+              chat: false,
+              leave: true
+            }}
           />
         </div>
       </div>
@@ -92,12 +100,53 @@ function ParticipantLoopWrapper() {
   return (
     <div className="grid grid-cols-2 gap-2">
       {tracks.map((track) => (
-        <ParticipantTile 
+        <CustomParticipantTile
           key={track.participant.identity}
           trackRef={track}
-          className="!bg-cyber-dark/60 !border !border-cyber-blue/20 !rounded-lg !p-1 !h-20"
         />
       ))}
+    </div>
+  );
+}
+
+function CustomParticipantTile({ trackRef }: { trackRef: any }) {
+  const [isLocallyMuted, setIsLocallyMuted] = useState(false);
+  const isLocal = trackRef.participant.isLocal;
+
+  // We can't actually mute the track natively via components-react easily without digging into the track object, 
+  // but we can set the volume to 0 to "mute" them locally if they are not the local user.
+  useEffect(() => {
+    if (!isLocal && trackRef.publication?.track) {
+      const audioTrack = trackRef.publication.track as any;
+      if (audioTrack.setVolume) {
+        audioTrack.setVolume(isLocallyMuted ? 0 : 1);
+      }
+    }
+  }, [isLocallyMuted, trackRef.publication, isLocal]);
+
+  return (
+    <div
+      className={`relative !bg-cyber-dark/60 !border !border-cyber-blue/20 !rounded-lg !p-1 !h-20 overflow-hidden cursor-pointer hover:border-cyber-blue/50 transition-colors ${isLocallyMuted && !isLocal ? 'opacity-50' : ''}`}
+      onClick={() => {
+        if (!isLocal) {
+          setIsLocallyMuted(!isLocallyMuted);
+        }
+      }}
+      title={isLocal ? "You" : (isLocallyMuted ? "Unmute user" : "Mute user locally")}
+    >
+      <ParticipantTile
+        trackRef={trackRef}
+        className="w-full h-full [&>.lk-participant-metadata]:opacity-100" // Ensure name is always visible
+      />
+      {/* Mute Overlay Icon */}
+      {isLocallyMuted && !isLocal && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none rounded-lg">
+          <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+        </div>
+      )}
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { TaskManager } from '@/components/game/TaskManager';
 import { MissionDebrief } from '@/components/game/MissionDebrief';
 import { TouchControls } from '@/components/game/TouchControls';
 import { GameAudio } from '@/components/game/GameAudio';
+import { updateUserPoints } from '@/app/actions/user';
 
 export default function PhishingPier() {
   const searchParams = useSearchParams();
@@ -16,6 +17,7 @@ export default function PhishingPier() {
   const engineRef = useRef<GameEngine | null>(null);
   const audioRef = useRef<GameAudio | null>(null);
 
+  const [controlPercent, setControlPercent] = useState(50);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [socket, setSocket] = useState<any>(null);
   const [players, setPlayers] = useState<Record<string, { role?: string, team?: string, isGhost?: boolean, x: number, y: number, color: string, name: string, tasks?: Record<string, {x: number, y: number, isComplete: boolean}> }>>({});
@@ -23,7 +25,6 @@ export default function PhishingPier() {
   const [bodies, setBodies] = useState<{x: number, y: number, id: string}[]>([]);
   const [meetingState, setMeetingState] = useState<{ active: boolean; reason?: string; votes?: Record<string, string>; ejectedMsg?: string; voteResults?: Record<string, {name: string, color: string}[]> } | null>(null);
   const [gameOver, setGameOver] = useState<{ winner: string; reason: string; eloGained?: number; bonusStr?: string } | null>(null);
-  const engineRef = useRef<GameEngine | null>(null);
   const [joined, setJoined] = useState(false);
   const [gameStatus, setGameStatus] = useState<'lobby' | 'playing'>('lobby');
   const [hostId, setHostId] = useState<string | null>(null);
@@ -43,7 +44,7 @@ export default function PhishingPier() {
   const [sabotageCooldowns, setSabotageCooldowns] = useState<Record<string, number>>({});
   const [logicBomb, setLogicBomb] = useState<{active: boolean, endTime: number, defusers: string[]}>({active: false, endTime: 0, defusers: []});
   const [droppedPackets, setDroppedPackets] = useState<Record<string, boolean>>({}); // for latency spike
-
+  const pointsAwardedRef = useRef(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -127,6 +128,7 @@ export default function PhishingPier() {
        setGameStartTime(null);
        setHostId(data.hostId);
        setGameStatus('lobby');
+       pointsAwardedRef.current = false;
     });
 
     newSocket.on('game_started', (data?: { elapsedTime: number, durationLimit: number }) => {
@@ -229,6 +231,20 @@ export default function PhishingPier() {
 
     newSocket.on('error', (msg: string) => {
        alert(msg); // Significant enough to alert for now
+    });
+
+    // Check win condition and award points
+    newSocket.on('game_over', (data: { winner: string; reason: string; eloGained?: number; bonusStr?: string }) => {
+      if (!pointsAwardedRef.current && newSocket.id) {
+         setPlayers(currentPlayers => {
+            const myPlayer = currentPlayers[newSocket.id];
+            if (myPlayer && myPlayer.team === data.winner) {
+               updateUserPoints(username, 1000).catch(console.error);
+               pointsAwardedRef.current = true;
+            }
+            return currentPlayers;
+         });
+      }
     });
 
     newSocket.on('game_created', (data: { roomId: string }) => {

@@ -418,10 +418,10 @@ export class GameState {
   }
 
   calculateElo(winner: Team) {
-    const eloGained = 20;
+    const eloGained = 1000;
     const bonusStr = '';
 
-    console.log(`[ELO_CALC] Team ${winner.toUpperCase()} Wins. Base +20. Total: +${eloGained}`);
+    console.log(`[ELO_CALC] Team ${winner.toUpperCase()} Wins. Base +1000. Total: +${eloGained}`);
     return { eloGained, bonusStr };
   }
 

@@ -102,7 +102,7 @@ export default function CyberRegister() {
             {/* Progress bar effect */}
             <div className="w-full h-1 bg-cyber-dark rounded-full overflow-hidden mt-4">
               <div 
-                className={`h-full ${accessGranted ? 'bg-cyber-green' : 'bg-cyber-blue'} transition-all duration-[3000ms] ease-out`}
+                className={`h-full ${accessGranted ? 'bg-cyber-green' : 'bg-cyber-blue'} transition-all duration-3000 ease-out`}
                 style={{ width: accessGranted ? '100%' : '70%' }}
               ></div>
             </div>

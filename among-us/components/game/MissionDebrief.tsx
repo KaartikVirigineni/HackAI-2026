@@ -2,16 +2,16 @@ import React from 'react';
 
 export function MissionDebrief() {
   return (
-    <div className="text-gray-300 font-orbitron text-sm space-y-6">
+    <div className="text-gray-300 font-orbitron text-sm space-y-6 landscape-compact-gap">
       {/* Header */}
-      <h2 className="text-2xl font-bold text-cyber-blue border-b border-cyber-blue pb-2 mb-4 text-glow-blue uppercase">
+      <h2 className="text-2xl font-bold text-cyber-blue border-b border-cyber-blue pb-2 mb-4 landscape-title text-glow-blue uppercase">
         Mission Debrief
       </h2>
 
       {/* The Objective */}
       <section>
-        <h3 className="text-xl text-white font-bold mb-2 uppercase">The Objective</h3>
-        <div className="space-y-3 bg-cyber-dark p-4 border border-gray-700 rounded">
+        <h3 className="text-xl text-white font-bold mb-2 landscape-title uppercase">The Objective</h3>
+        <div className="space-y-3 landscape-compact-gap bg-cyber-dark p-4 landscape-squeeze border border-gray-700 rounded">
           <p>
             <strong className="text-cyber-blue">Blue Team (Analysts):</strong> Reach 100% System Integrity. You must maintain at least 80% by the 5-minute mark to prevent a total breach.
           </p>
@@ -23,8 +23,8 @@ export function MissionDebrief() {
 
       {/* The Rules */}
       <section>
-        <h3 className="text-xl text-white font-bold mb-2 uppercase">The Rules</h3>
-        <ul className="list-disc pl-5 space-y-2 bg-cyber-dark p-4 border border-gray-700 rounded">
+        <h3 className="text-xl text-white font-bold mb-2 landscape-title uppercase">The Rules</h3>
+        <ul className="list-disc pl-5 space-y-2 landscape-compact-gap bg-cyber-dark p-4 landscape-squeeze border border-gray-700 rounded">
           <li><strong>Observe & Adapt:</strong> There are no tutorials. If a UI element is flashing Red, it needs fixing.</li>
           <li><strong>Trust, But Verify:</strong> Sabotage can only be cleared by specific roles. If someone is standing near a "broken" terminal and not fixing it, they might be Red.</li>
           <li><strong>The Dominance Bar:</strong> If the Red Team's active attacks outweigh your defenses, your Integrity progress freezes. Clear your alerts to start winning again.</li>
@@ -36,8 +36,8 @@ export function MissionDebrief() {
 
       {/* Role-Specific Mini-Game Logic */}
       <section>
-        <h3 className="text-xl text-cyber-green font-bold mb-2 border-b border-green-800 pb-1 uppercase">🛠️ Role-Specific Mini-Game Logic</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <h3 className="text-xl text-cyber-green font-bold mb-2 landscape-title border-b border-green-800 pb-1 uppercase">🛠️ Role-Specific Mini-Game Logic</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 landscape-compact-gap">
           
           <div className="bg-cyber-dark p-3 border border-gray-700 rounded">
             <h4 className="text-lg font-bold text-white mb-1">1. NetSec Operator (Network Security)</h4>
@@ -98,10 +98,10 @@ export function MissionDebrief() {
 
       {/* Red Team Sabotage Logic */}
       <section>
-        <h3 className="text-xl text-cyber-red font-bold mb-2 border-b border-red-900 pb-1 uppercase">🛑 Red Team: Sabotage & Deception Logic</h3>
-        <div className="bg-red-900/20 p-4 border border-cyber-red rounded">
+        <h3 className="text-xl text-cyber-red font-bold mb-2 landscape-title border-b border-red-900 pb-1 uppercase">🛑 Red Team: Sabotage & Deception Logic</h3>
+        <div className="bg-red-900/20 p-4 landscape-squeeze border border-cyber-red rounded">
           <p className="mb-2 text-red-200">Red Team has a Sabotage UI with cooldowns. They must be at a "Terminal" to trigger these.</p>
-          <ul className="list-disc pl-5 space-y-2 text-red-100/80">
+          <ul className="list-disc pl-5 space-y-2 landscape-compact-gap text-red-100/80">
             <li><strong>Logic Bomb (The Game Ender):</strong> Logic: Starts a 45s countdown. Blue Team must have 2 different roles (e.g., CIRT and NetSec) interact with the "Core" simultaneously to defuse.</li>
             <li><strong>UI Scramble (Log Encryption):</strong> Effect: For 20s, all Blue Team labels turn into 0x?? symbols.</li>
             <li><strong>Latency Spike (DDoS):</strong> Effect: For 20s, Blue Team must double-tap everything because the first tap is "dropped."</li>

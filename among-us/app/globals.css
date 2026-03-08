@@ -188,3 +188,22 @@ input:-webkit-autofill:active{
 .lk-button-group-menu {
   display: none !important;
 }
+
+/* Custom Mobile Landscape Adjustments */
+@media screen and (max-height: 500px) {
+  .landscape-squeeze {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  .landscape-compact-gap {
+    gap: 0.5rem !important;
+  }
+  .landscape-title {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  .landscape-box {
+    padding: 1rem !important;
+    min-height: 12rem !important;
+  }
+}

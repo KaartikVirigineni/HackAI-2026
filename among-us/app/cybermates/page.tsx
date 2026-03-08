@@ -408,8 +408,8 @@ export default function PhishingPier() {
     <div className={`relative w-full ${gameStatus === 'playing' ? 'h-screen overflow-hidden' : 'min-h-screen'} bg-cyber-dark text-cyber-green font-orbitron flex flex-col items-center justify-center ${showGlitch ? 'animate-glitch opacity-90' : ''}`}>
       
       {!joined && (
-        <div className="relative z-50 flex flex-col items-center justify-center min-h-screen w-full bg-black/80 backdrop-blur-sm p-4 py-4 md:py-12 overflow-y-auto">
-           <div className="bg-cyber-darker border-2 border-cyber-green p-4 md:p-8 rounded-lg box-glow-green text-center w-full max-w-md my-auto">
+        <div className="relative z-50 flex flex-col items-center justify-center min-h-screen w-full bg-black/80 backdrop-blur-sm p-4 py-4 md:py-12 landscape-squeeze overflow-y-auto">
+           <div className="bg-cyber-darker border-2 border-cyber-green p-4 md:p-8 landscape-box rounded-lg box-glow-green text-center w-full max-w-md my-auto">
             <h1 className="text-3xl font-bold mb-6 text-cyber-green text-glow-green">PHISHING PIER</h1>
             <p className="mb-4 text-gray-300">Create a new secure operation or join an existing bridge call.</p>
             
@@ -480,7 +480,7 @@ export default function PhishingPier() {
 
       {/* Pre-Game Lobby Overlay */}
       {joined && gameStatus === 'lobby' && (
-        <div className="relative z-40 bg-black/90 flex flex-col items-center justify-start min-h-screen w-full p-4 pt-12 md:p-8 md:justify-center backdrop-blur-sm overflow-y-auto">
+        <div className="relative z-40 bg-black/90 flex flex-col items-center justify-start min-h-screen w-full p-4 pt-12 md:p-8 landscape-squeeze md:justify-center backdrop-blur-sm overflow-y-auto">
            <button 
              onClick={() => window.location.href = '/home'}
              className="absolute top-4 left-4 md:top-8 md:left-8 text-cyber-blue/60 hover:text-cyber-blue text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
@@ -488,19 +488,19 @@ export default function PhishingPier() {
              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
              RETURN HOME
            </button>
-           <h1 className="text-3xl md:text-5xl font-bold mb-2 md:mb-4 text-cyber-blue animate-pulse-slow text-glow-blue mt-8 md:mt-0">PRE-GAME LOBBY</h1>
-           <p className="text-lg md:text-xl text-gray-300 mb-4 md:mb-8 border-b border-gray-700 pb-2 md:pb-4">Lobby Code: <span className="text-white font-bold tracking-widest bg-cyber-dark p-2 border border-gray-600 rounded select-all">{teamCode}</span></p>
+           <h1 className="text-3xl md:text-5xl font-bold mb-2 md:mb-4 text-cyber-blue animate-pulse-slow text-glow-blue mt-8 md:mt-0 landscape-title">PRE-GAME LOBBY</h1>
+           <p className="text-lg md:text-xl text-gray-300 mb-4 md:mb-8 border-b border-gray-700 pb-2 md:pb-4 landscape-title">Lobby Code: <span className="text-white font-bold tracking-widest bg-cyber-dark p-2 border border-gray-600 rounded select-all">{teamCode}</span></p>
            
-           <div className="flex flex-col md:flex-row gap-3 md:gap-8 w-full max-w-7xl h-auto md:h-[40rem]">
+           <div className="flex flex-col md:flex-row gap-3 md:gap-8 landscape-compact-gap w-full max-w-7xl h-auto md:h-[40rem]">
               {/* Mission Debrief Section */}
               <div className="flex-[2] bg-cyber-darker border border-cyber-blue rounded p-6 overflow-y-auto box-glow-blue thin-scrollbar min-h-[50vh] md:min-h-0">
                  <MissionDebrief />
               </div>
 
               {/* Connected Players List */}
-              <div className="flex-1 bg-cyber-darker border border-cyber-green rounded p-6 overflow-y-auto box-glow-green flex flex-col min-h-[40vh] md:min-h-0">
-                  <h2 className="text-xl md:text-2xl text-cyber-green mb-4 md:mb-6 font-bold border-b border-green-800 pb-2">Agents Connected ({Object.keys(players).length}/8)</h2>
-                 <div className="grid grid-cols-1 gap-3 md:gap-4 flex-1 content-start">
+              <div className="flex-1 bg-cyber-darker border border-cyber-green rounded p-6 landscape-box overflow-y-auto box-glow-green flex flex-col min-h-[40vh] md:min-h-0">
+                  <h2 className="text-xl md:text-2xl text-cyber-green mb-4 md:mb-6 landscape-title font-bold border-b border-green-800 pb-2">Agents Connected ({Object.keys(players).length}/8)</h2>
+                 <div className="grid grid-cols-1 gap-3 md:gap-4 landscape-compact-gap flex-1 content-start">
                     {Object.entries(players).map(([id, p]) => (
                        <div key={id} className={`flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded border border-gray-700 bg-cyber-dark ${id === socket?.id ? 'ring-2 ring-white' : ''}`}>
                           <div className="w-6 h-6 rounded-full" style={{ backgroundColor: p.color, boxShadow: `0 0 10px ${p.color}` }} />
@@ -514,10 +514,10 @@ export default function PhishingPier() {
               </div>
 
               {/* Host Controls */}
-              <div className="w-full md:w-80 flex flex-col justify-center items-center bg-cyber-darker border border-cyber-blue rounded p-6 box-glow-blue">
+              <div className="w-full md:w-80 flex flex-col justify-center items-center bg-cyber-darker border border-cyber-blue rounded p-6 landscape-box box-glow-blue">
                  {socket?.id === hostId ? (
                    <>
-                      <h3 className="text-xl text-yellow-400 font-bold mb-4 text-center">HOST CONTROLS</h3>
+                      <h3 className="text-xl text-yellow-400 font-bold mb-4 landscape-title text-center">HOST CONTROLS</h3>
                       <p className="text-gray-400 text-sm text-center mb-6">You must wait for at least 4 personnel to start the simulation. The game will automatically start when 8 join.</p>
                       <button 
                          onClick={() => socket.emit('start_game_request')}

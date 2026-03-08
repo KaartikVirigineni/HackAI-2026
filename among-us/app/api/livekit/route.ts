@@ -28,7 +28,10 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const at = new AccessToken(apiKey, apiSecret, { identity: username });
+  const at = new AccessToken(apiKey, apiSecret, { 
+    identity: username,
+    ttl: "24h",
+  });
 
   at.addGrant({ room, roomJoin: true, canPublish: true, canSubscribe: true });
 

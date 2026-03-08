@@ -18,17 +18,23 @@ export default function VoiceChat({ roomName = "cyberarena-room", username: prop
   const [username] = useState(() => propUsername || "agent_" + Math.floor(Math.random() * 1000));
   const [token, setToken] = useState("");
 
+  const [tokenVersion, setTokenVersion] = useState(0);
+
   useEffect(() => {
+    let isMounted = true;
     (async () => {
       try {
-        const resp = await fetch(`/api/livekit?room=${roomName}&username=${username}`);
+        const resp = await fetch(`/api/livekit?room=${roomName}&username=${username}&v=${tokenVersion}`);
         const data = await resp.json();
-        setToken(data.token);
+        if (isMounted) {
+          setToken(data.token);
+        }
       } catch (e) {
-        console.error(e);
+        console.error("TOKEN_FETCH_FAILURE:", e);
       }
     })();
-  }, [roomName, username]);
+    return () => { isMounted = false; };
+  }, [roomName, username, tokenVersion]);
 
   if (token === "") {
     return <div className="text-cyber-blue font-orbitron text-center p-4 text-xs animate-pulse">Establishing Secure Uplink...</div>;
@@ -45,10 +51,22 @@ export default function VoiceChat({ roomName = "cyberarena-room", username: prop
       className="flex flex-col h-full overflow-hidden bg-cyber-darker/40"
     >
       <div className="flex flex-col gap-2 p-2 h-full">
-        {/* Connection Status */}
+        {/* Connection Status & Refresh */}
         <div className="flex justify-between items-center px-2 py-1 border-b border-cyber-blue/10">
-          <span className="text-[10px] font-orbitron text-cyber-blue/50 uppercase">Room: {roomName.split('-').pop()}</span>
-          <ConnectionState className="text-[10px] font-orbitron text-cyber-green" />
+          <div className="flex flex-col">
+            <span className="text-[10px] font-orbitron text-cyber-blue/50 uppercase">Room: {roomName.split('-').pop()}</span>
+            <ConnectionState className="text-[10px] font-orbitron text-cyber-green" />
+          </div>
+          <button 
+            onClick={() => {
+              setToken("");
+              setTokenVersion(v => v + 1);
+            }}
+            className="text-[9px] font-orbitron text-cyber-blue border border-cyber-blue/30 px-1.5 py-0.5 rounded hover:bg-cyber-blue/10 transition-all uppercase"
+            title="Force refresh secure uplink"
+          >
+            Refresh
+          </button>
         </div>
 
         {/* Custom Participant List */}

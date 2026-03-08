@@ -1,43 +1,35 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { checkApiKey, generateJsonContent } from "@/app/lib/aiProvider";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const authError = await checkApiKey();
   if (authError) return authError;
 
-  try {
+  const url = new URL(req.url);
+  const feedback = url.searchParams.get('feedback'); // 'up', 'down', or null
+  
+  let instructions = 'Generate a new flashcard.';
+  if (feedback === 'up') {
+    instructions = 'The user liked the previous flashcard. Make the next one slightly more difficult and on a similar or advanced related topic.';
+  } else if (feedback === 'down') {
+    instructions = 'The user found the previous flashcard too difficult or unhelpful. Make the next one easier and cover fundamental concepts.';
+  }
 
+  try {
     const prompt = `
       You are an expert cybersecurity instructor in a futuristic, neon simulation called "CyberArena". 
-      Your task is to generate an educational scenario about "Phishing Attacks". 
-      The content should take about 5-8 minutes to read and be highly engaging.
+      Your task is to generate ONE single educational flashcard about a Cybersecurity concept.
+      
+      Instructions: ${instructions}
+
       It MUST be strictly formatted as a JSON object with the following schema:
       {
-        "title": "A catchy title for the phishing module",
-        "description": "A short introductory blurb",
-        "contentBlocks": [
-           {
-              "id": 1,
-              "text": "Detailed, paragraph-long explanation of a specific phishing concept. Use markdown formatting like bolding for key terms."
-           }
-        ],
-        "discussionQuestions": [
-          {
-             "id": 1,
-             "insertAfterBlockId": 1,
-             "question": "A scenario-based multiple choice question to test their understanding of the preceding text.",
-             "options": [
-                {"id": "A", "text": "First possible answer..."},
-                {"id": "B", "text": "Second possible answer..."},
-                {"id": "C", "text": "Third possible answer..."},
-                {"id": "D", "text": "Fourth possible answer..."}
-             ],
-             "correctOptionId": "C",
-             "explanation": "A detailed explanation of why this option is correct and why the others are wrong."
-          }
-        ]
+        "id": "A unique random string ID for this card",
+        "topic": "The general topic (e.g., 'Phishing', 'Cryptography', 'Network Security')",
+        "question": "A concise, engaging question or scenario.",
+        "answer": "The correct answer or explanation.",
+        "difficulty": "Beginner, Intermediate, or Advanced"
       }
-      Generate exactly 5 content blocks, and exactly 3 discussion questions. Put question 1 after block 1, question 2 after block 3, and question 3 after block 5.
     `;
 
     const text = await generateJsonContent(prompt);
@@ -48,6 +40,6 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return NextResponse.json({ error: "Failed to generate learning content" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to generate flashcard" }, { status: 500 });
   }
 }

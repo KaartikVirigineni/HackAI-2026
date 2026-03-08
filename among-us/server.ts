@@ -167,6 +167,13 @@ app.prepare().then(() => {
       const session = getGame(socket.id);
       if (session) session.game.handleVote(socket.id, voteTargetId);
     });
+    socket.on('join_global_room', (roomId) => {
+      socket.join(roomId);
+    });
+
+    socket.on('broadcast_flashcard', ({ roomId, flashcard, reveal }) => {
+      socket.to(roomId).emit('flashcard_sync', { flashcard, reveal });
+    });
   });
 
   const PORT = process.env.PORT || 3000;

@@ -184,3 +184,7 @@ input:-webkit-autofill:active{
   scrollbar-width: none;
 }
 
+/* Hide the LiveKit mic ControlBar dropdown chevron button */
+.lk-button-group-menu {
+  display: none !important;
+}

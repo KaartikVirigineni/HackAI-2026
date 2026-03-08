@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCyberAudio } from "@/app/hooks/useCyberAudio";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // Define message types. "system" is for local UI notifications only and won't be sent to Gemini.
 interface ChatMessage {
@@ -12,7 +13,6 @@ interface ChatMessage {
 }
 
 export default function ChatPage() {
-  const router = useRouter();
   const { playHover } = useCyberAudio();
   
   const [messages, setMessages] = useState<ChatMessage[]>([{
@@ -80,7 +80,7 @@ export default function ChatPage() {
         // alternate user/model, and NOT include the current prompt.
         // It also does not support our custom "system" role.
         
-        let geminiHistory = messages.filter(msg => msg.role !== "system");
+        const geminiHistory = messages.filter(msg => msg.role !== "system");
         
         // Ensure history starts with a user message if it's not empty
         if (geminiHistory.length > 0 && geminiHistory[0].role !== "user") {
@@ -109,8 +109,8 @@ export default function ChatPage() {
             parts: [{ text: data.text }]
         }]);
 
-    } catch (err: any) {
-        setError(err.message || "Connection to Gemini failed.");
+    } catch (err: unknown) {
+        setError((err as Error).message || "Connection to Gemini failed.");
     } finally {
         setIsTyping(false);
     }
@@ -239,13 +239,49 @@ export default function ChatPage() {
                            </div>
 
                            {/* Bubble */}
-                           <div className={`p-4 rounded-2xl whitespace-pre-wrap ${
+                           <div className={`p-4 rounded-2xl ${
                               isModel 
                                  ? 'bg-cyber-darker/80 border border-cyber-green/20 text-gray-300 rounded-tl-sm' 
-                                 : 'bg-cyber-blue border border-cyber-blue/50 text-cyber-dark font-medium rounded-tr-sm shadow-[0_0_15px_rgba(0,243,255,0.3)]'
+                                 : 'bg-cyber-blue border border-cyber-blue/50 text-cyber-dark font-medium rounded-tr-sm shadow-[0_0_15px_rgba(0,243,255,0.3)] whitespace-pre-wrap'
                               }`}
                            >
-                              {m.parts[0].text}
+                              {isModel && !isSystemLog ? (
+                                 <ReactMarkdown 
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                       p: ({node: _node, ...props}) => <p className="mb-4 last:mb-0 leading-relaxed" {...props} />,
+                                       a: ({node: _node, ...props}) => <a className="text-cyber-green hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+                                       ul: ({node: _node, ...props}) => <ul className="list-disc pl-6 mb-4 last:mb-0 space-y-1" {...props} />,
+                                       ol: ({node: _node, ...props}) => <ol className="list-decimal pl-6 mb-4 last:mb-0 space-y-1" {...props} />,
+                                       li: ({node: _node, ...props}) => <li className="pl-1" {...props} />,
+                                       h1: ({node: _node, ...props}) => <h1 className="text-2xl font-bold font-orbitron text-white mb-4 mt-6 first:mt-0 tracking-wider" {...props} />,
+                                       h2: ({node: _node, ...props}) => <h2 className="text-xl font-bold font-orbitron text-white mb-3 mt-5 first:mt-0 tracking-wide" {...props} />,
+                                       h3: ({node: _node, ...props}) => <h3 className="text-lg font-bold font-orbitron text-gray-200 mb-2 mt-4 first:mt-0" {...props} />,
+                                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                       code: ({inline, className, children, ...props}: any) => {
+                                          return !inline ? (
+                                             <pre className="bg-[#02050D] border border-cyber-green/30 rounded-lg p-4 mb-4 overflow-x-auto">
+                                                <code className={className} {...props}>
+                                                   {children}
+                                                </code>
+                                             </pre>
+                                          ) : (
+                                             <code className="bg-cyber-green/10 text-cyber-green px-1.5 py-0.5 rounded font-mono text-sm" {...props}>
+                                                {children}
+                                             </code>
+                                          );
+                                       },
+                                       blockquote: ({node: _node, ...props}) => <blockquote className="border-l-4 border-cyber-green/50 pl-4 py-1 italic text-gray-400 mb-4 bg-cyber-green/5 rounded-r" {...props} />,
+                                       table: ({node: _node, ...props}) => <div className="overflow-x-auto mb-4"><table className="w-full border-collapse border border-cyber-green/20" {...props} /></div>,
+                                       th: ({node: _node, ...props}) => <th className="border border-cyber-green/20 bg-cyber-green/10 px-4 py-2 font-bold text-cyber-green text-left" {...props} />,
+                                       td: ({node: _node, ...props}) => <td className="border border-cyber-green/20 px-4 py-2" {...props} />
+                                    }}
+                                 >
+                                    {m.parts[0].text}
+                                 </ReactMarkdown>
+                              ) : (
+                                 <>{m.parts[0].text}</>
+                              )}
                            </div>
                         </div>
                      </div>
@@ -279,7 +315,7 @@ export default function ChatPage() {
                         onKeyDown={(e) => {
                            if (e.key === 'Enter' && !e.shiftKey) {
                               e.preventDefault();
-                              sendMessage(e as any);
+                              sendMessage(e as unknown as React.FormEvent);
                            }
                         }}
                         placeholder="Ask your AI Mentor about cybersecurity..."

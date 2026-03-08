@@ -282,7 +282,7 @@ export default function LearnPage() {
                 {/* Transition to Trivia Module */}
                 {!loading && !error && lessonData && (
                   <div className="mt-16 pt-12 border-t border-cyber-blue/20 relative animate-fade-in-up">
-                    <div className="absolute -top-px left-1/2 -translate-x-1/2 w-64 h-px bg-gradient-to-r from-transparent via-cyber-blue to-transparent"></div>
+                    <div className="absolute -top-px left-1/2 -translate-x-1/2 w-64 h-px bg-linear-to-r from-transparent via-cyber-blue to-transparent"></div>
                     <div className="text-center space-y-6 bg-cyber-dark/80 backdrop-blur-md p-8 sm:p-12 rounded-2xl border border-cyber-blue/40 shadow-[0_0_30px_rgba(0,243,255,0.05)]">
                        <h2 className="text-2xl sm:text-3xl font-orbitron font-bold text-white uppercase tracking-widest text-glow-blue">
                          Training Complete

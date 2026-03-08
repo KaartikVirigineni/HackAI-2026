@@ -60,11 +60,12 @@ app.prepare().then(() => {
       game.addPlayer(socket.id, role, username);
       
       socket.emit('game_created', { roomId });
-      socket.emit('game_init', { playerId: socket.id, role: role.name, team: role.team });
       socket.emit('control_update', game.controlPercentage);
       
       io.to(roomId).emit('game_status_update', { status: game.gameStatus, hostId: game.hostId });
       io.to(roomId).emit('players', game.players);
+
+      // Start tick loop for the room if it doesn't exist (tied to roomId logic, handled generically in a master loop)
     });
 
     socket.on('join_game', ({ username, teamCode }) => {
@@ -81,12 +82,12 @@ app.prepare().then(() => {
 
       const redCount = Object.values(game.players).filter(p => p.team === 'red').length;
       const blueCount = Object.values(game.players).filter(p => p.team === 'blue').length;
-      const assignedTeam: Team = blueCount <= redCount ? 'blue' : 'red';
+      const assignedTeam = blueCount <= redCount ? 'blue' : 'red';
 
-      const teamRoles = Object.values(ROLES).filter((r) => r.team === assignedTeam);
+      const teamRoles = Object.values(ROLES).filter((r: any) => r.team === assignedTeam);
       const randomRole = teamRoles[Math.floor(Math.random() * teamRoles.length)];
       const roleKey = Object.keys(ROLES).find(k => ROLES[k] === randomRole)!;
-      const role = { name: roleKey, team: assignedTeam };
+      const role = { name: roleKey, team: assignedTeam as Team };
 
       const success = game.addPlayer(socket.id, role, username);
       if (!success) {
@@ -96,7 +97,6 @@ app.prepare().then(() => {
       
       socket.join(roomId);
       socket.emit('joined_room', { roomId });
-      socket.emit('game_init', { playerId: socket.id, role: role.name, team: role.team });
       socket.emit('control_update', game.controlPercentage);
       
       io.to(roomId).emit('game_status_update', { status: game.gameStatus, hostId: game.hostId });
@@ -126,7 +126,7 @@ app.prepare().then(() => {
 
     socket.on('start_game_request', () => {
        const session = getGame(socket.id);
-       if (session && socket.id === session.game.hostId && Object.keys(session.game.players).length >= 4) {
+       if (session && socket.id === session.game.hostId && Object.keys(session.game.players).length >= 1) {
           session.game.startGame();
           io.to(session.roomId).emit('game_status_update', { status: session.game.gameStatus, hostId: session.game.hostId });
        }
@@ -153,6 +153,13 @@ app.prepare().then(() => {
       }
     });
 
+    socket.on('play_again_request', () => {
+       const session = getGame(socket.id);
+       if (session && socket.id === session.game.hostId) {
+          session.game.resetGame();
+       }
+    });
+
     socket.on('bridge_call', () => {
       const session = getGame(socket.id);
       if (session) session.game.startMeeting(socket.id, 'Bridge Call Requested');
@@ -166,17 +173,6 @@ app.prepare().then(() => {
     socket.on('submit_vote', (voteTargetId) => {
       const session = getGame(socket.id);
       if (session) session.game.handleVote(socket.id, voteTargetId);
-    });
-    socket.on('join_global_room', (roomId) => {
-      socket.join(roomId);
-    });
-
-    socket.on('broadcast_flashcard', ({ roomId, flashcard, reveal }) => {
-      socket.to(roomId).emit('flashcard_sync', { flashcard, reveal });
-    });
-
-    socket.on('broadcast_lesson', ({ roomId, lesson, answers, revealed }) => {
-      socket.to(roomId).emit('lesson_sync', { lesson, answers, revealed });
     });
   });
 

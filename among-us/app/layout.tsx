@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CyberArena",
+  title: "CrashOut",
   description: "Master Cybersecurity Through Play",
 };
 

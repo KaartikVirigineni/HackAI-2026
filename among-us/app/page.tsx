@@ -73,7 +73,7 @@ export default function CyberLogin() {
             <span className="text-3xl">🔐</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold font-orbitron tracking-wider text-cyber-blue text-glow-blue mb-2 uppercase">
-            CyberArena
+            CrashOut
           </h1>
           <p className="text-cyber-blue/70 text-sm tracking-widest uppercase font-semibold">
             Master Cybersecurity Through Play

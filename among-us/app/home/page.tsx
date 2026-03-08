@@ -91,7 +91,7 @@ export default function CyberHome() {
           {/* Center: Website Name */}
           <div className="flex-1 text-center w-full md:w-auto">
             <h1 className="text-4xl md:text-5xl font-bold font-orbitron tracking-widest text-cyber-blue text-glow-blue uppercase">
-              CyberArena
+              CrashOut
             </h1>
             <div className="h-px w-32 bg-cyber-blue/50 mx-auto mt-2 box-glow-blue"></div>
           </div>

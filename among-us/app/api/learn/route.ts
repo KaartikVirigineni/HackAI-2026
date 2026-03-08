@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const prompt = `
-      You are an expert cybersecurity instructor in a futuristic, neon simulation called "CyberArena". 
+      You are an expert cybersecurity instructor in a futuristic, neon simulation called "CrashOut". 
       Your task is to generate ONE comprehensive educational lesson about a Cybersecurity concept.
       
       Instructions: ${instructions}

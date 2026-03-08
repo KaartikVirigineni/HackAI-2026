@@ -73,10 +73,10 @@ export default function CyberRegister() {
             <span className="text-2xl">🔐</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold font-orbitron tracking-wider text-cyber-blue text-glow-blue mb-2 uppercase">
-            CyberArena
+            CrashOut
           </h1>
           <p className="text-cyber-blue/70 text-xs tracking-widest uppercase font-semibold">
-            Join the CyberArena and master cybersecurity skills.
+            Join CrashOut and master cybersecurity skills.
           </p>
         </div>
 
@@ -143,7 +143,7 @@ export default function CyberRegister() {
                   name="email"
                   required
                   className="w-full bg-cyber-dark/50 border border-cyber-blue/30 rounded-lg px-4 py-2.5 sm:py-3 text-cyber-blue placeholder-cyber-blue/30 focus:outline-none focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue transition-all duration-300 font-mono text-sm"
-                  placeholder="agent@cyberarena.net"
+                  placeholder="agent@crashout.net"
                 />
                 <div className="absolute inset-0 border border-cyber-blue opacity-0 group-hover:opacity-50 pointer-events-none rounded-lg transition-opacity duration-300"></div>
               </div>

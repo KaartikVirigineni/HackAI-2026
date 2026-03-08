@@ -8,7 +8,7 @@ export async function GET() {
   try {
 
     const prompt = `
-      You are an expert cybersecurity instructor running a rapid-fire "Trivia" simulation in a futuristic, neon environment called "CyberArena".
+      You are an expert cybersecurity instructor running a rapid-fire "Trivia" simulation in a futuristic, neon environment called "CrashOut".
       Your task is to generate exactly 5 distinct, highly engaging multiple-choice questions covering a variety of beginner-to-intermediate cybersecurity topics (e.g., malware types, network security, cryptography basics, social engineering, physical security).
 
       The output MUST be strictly formatted as a JSON array of 5 objects with the following schema:

@@ -15,7 +15,7 @@ const at = new AccessToken(apiKey, apiSecret, {
 
 at.addGrant({
   roomJoin: true,
-  room: "cyberarena-room",
+  room: "crashout-room",
 });
 
 (async () => {

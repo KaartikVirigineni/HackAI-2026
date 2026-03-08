@@ -11,7 +11,7 @@ import {
 import "@livekit/components-styles";
 import { Track } from "livekit-client";
 
-export default function VoiceChat({ roomName = "cyberarena-room", username: propUsername }: { roomName?: string, username?: string }) {
+export default function VoiceChat({ roomName = "crashout-room", username: propUsername }: { roomName?: string, username?: string }) {
   const [username] = useState(() => propUsername || "agent_" + Math.floor(Math.random() * 1000));
   const [token, setToken] = useState("");
 

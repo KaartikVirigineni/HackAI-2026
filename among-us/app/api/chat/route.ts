@@ -12,7 +12,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "No prompt provided." }, { status: 400 });
     }
 
-    const systemInstruction = `You are an expert cybersecurity tutor in the neon "CyberArena" system. 
+    const systemInstruction = `You are an expert cybersecurity tutor in the neon "CrashOut" system. 
        Help the agent learn cybersecurity concepts. Be encouraging, highly knowledgeable, and use a slight cyberpunk/hacker tone.${
        syllabusContext ? ` The user has provided their syllabus document. Answer their questions drawing primarily on the topics listed in it.` : ''
     }`;

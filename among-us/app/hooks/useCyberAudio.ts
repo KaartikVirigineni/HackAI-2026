@@ -26,7 +26,7 @@ export function useCyberAudio() {
 
   const initAudio = useCallback(() => {
     if (!globalAudioCtx) {
-      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+      const Ctx = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (Ctx) {
         globalAudioCtx = new Ctx();
       }

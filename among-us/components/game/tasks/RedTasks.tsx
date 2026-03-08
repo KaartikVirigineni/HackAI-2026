@@ -1,86 +1,160 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-// 1. Author A
-export const BehavioralProfiling: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
-  const [selectedWord, setSelectedWord] = useState('');
+// 1. Author A — Spear-Phishing Construction (Type-Racer)
+export const BehavioralProfiling: React.FC<{ onComplete: () => void, onError: (msg: string) => void }> = ({ onComplete, onError }) => {
+  const sentences = [
+    "Please review the Q3 port docking protocols attached.",
+    "Your MFA token has expired. Click here to re-verify.",
+    "IT Security: Mandatory VPN recertification required now.",
+    "Payroll has updated your direct deposit. Confirm details.",
+  ];
+  const [target] = useState(() => sentences[Math.floor(Math.random() * sentences.length)]);
+  const [typed, setTyped] = useState('');
+  const [flagged, setFlagged] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setTyped(val);
+
+    // Detect typo: compare character by character
+    for (let i = 0; i < val.length; i++) {
+      if (val[i] !== target[i]) {
+        setFlagged(true);
+        onError('[BLUE ALERT] Phishing email flagged as spam! Suspicious sender pattern detected.');
+        setTyped('');
+        return;
+      }
+    }
+    setFlagged(false);
+    if (val === target) onComplete();
+  };
+
   return (
-    <div className="flex flex-col gap-4">
-      <h3 className="text-xl font-bold text-red-500">Behavioral Profiling</h3>
-      <p className="text-sm">Target Interest: "Coffee Lover". Complete the Phishing Template:</p>
-      
-      <div className="bg-gray-800 p-4 font-mono text-sm leading-8 border border-red-500">
-        "Hello User, your recent order for <span className="inline-block min-w-[100px] border-b-2 border-red-400 text-yellow-300 text-center">{selectedWord || '_____'}</span> has been delayed."
+    <div className="flex flex-col gap-4 font-mono">
+      <h3 className="text-xl font-bold text-red-500">Spear-Phishing Construction</h3>
+      <p className="text-xs text-gray-400">Type the phishing sentence EXACTLY. One typo = Spam Flag (Blue Team gets an alert).</p>
+
+      <div className="bg-slate-900 border border-red-700 p-3 text-sm leading-7 tracking-wide">
+        {target.split('').map((ch, i) => {
+          let color = 'text-gray-400';
+          if (i < typed.length) color = typed[i] === ch ? 'text-green-400' : 'text-red-500';
+          return <span key={i} className={color}>{ch}</span>;
+        })}
       </div>
-      
-      <div className="grid grid-cols-2 gap-2 mt-4">
-        {["Office Supplies", "Starbucks Voucher", "Tax Return", "IT Policy Update"].map(word => (
-          <button 
-            key={word}
-            className="bg-gray-700 hover:bg-gray-600 p-2 border border-slate-500 transition-colors"
-            onClick={() => {
-              setSelectedWord(word);
-              if (word === "Starbucks Voucher") {
-                setTimeout(onComplete, 500);
-              } else {
-                alert("Target unlikely to click. Profiling mismatched.");
-                setSelectedWord('');
-              }
-            }}
-          >
-            {word}
-          </button>
-        ))}
-      </div>
+
+      <input
+        ref={inputRef}
+        type="text"
+        value={typed}
+        onChange={handleChange}
+        className={`bg-black border p-2 text-white outline-none w-full font-mono ${flagged ? 'border-red-600 animate-pulse' : 'border-slate-600 focus:border-yellow-500'}`}
+        placeholder="Start typing..."
+        spellCheck={false}
+        autoComplete="off"
+      />
+
+      {flagged && <p className="text-red-400 text-xs animate-pulse">⚠ SPAM FLAG — Try again. Blue Team notified.</p>}
+      <p className="text-xs text-gray-500">Progress: {typed.length}/{target.length} chars</p>
     </div>
   );
 };
 
-// 2. Author B
-export const PayloadObfuscation: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
-  // Simplified "Snake" maze. A grid where hovering a "wall" fails, must hover the "path" from Start to End.
-  const [failed, setFailed] = useState(false);
-  
-  if (failed) {
-    return (
-      <div className="flex flex-col items-center gap-4">
-        <h3 className="text-xl font-bold text-red-500">Payload Obfuscation</h3>
-        <p className="text-red-400">AV Scanner Triggered!</p>
-        <button className="bg-gray-800 p-2 border" onClick={() => setFailed(false)}>Retry Compile</button>
-      </div>
-    );
-  }
+// 2. Author B — Shadow Mirroring (HSB Color Slider)
+export const PayloadObfuscation: React.FC<{ onComplete: () => void, onError: (msg: string) => void }> = ({ onComplete, onError }) => {
+  const [targetHSB] = useState(() => ({
+    h: Math.floor(Math.random() * 360),
+    s: Math.floor(40 + Math.random() * 50), // 40–90%
+    b: Math.floor(40 + Math.random() * 50), // 40–90%
+  }));
+  const [h, setH] = useState(180);
+  const [s, setS] = useState(50);
+  const [b, setB] = useState(50);
+  const [submitted, setSubmitted] = useState(false);
+
+  const hsbToRgb = (hh: number, ss: number, bb: number) => {
+    const s2 = ss / 100, v2 = bb / 100;
+    const C = v2 * s2;
+    const X = C * (1 - Math.abs(((hh / 60) % 2) - 1));
+    const m = v2 - C;
+    let r = 0, g = 0, b2 = 0;
+    if (hh < 60)  { r = C; g = X; }
+    else if (hh < 120) { r = X; g = C; }
+    else if (hh < 180) { g = C; b2 = X; }
+    else if (hh < 240) { g = X; b2 = C; }
+    else if (hh < 300) { r = X; b2 = C; }
+    else              { r = C; b2 = X; }
+    return `rgb(${Math.round((r+m)*255)},${Math.round((g+m)*255)},${Math.round((b2+m)*255)})`;
+  };
+
+  const targetColor = hsbToRgb(targetHSB.h, targetHSB.s, targetHSB.b);
+  const userColor   = hsbToRgb(h, s, b);
+
+  const similarity = () => {
+    const dh = Math.abs(h - targetHSB.h);
+    const ds = Math.abs(s - targetHSB.s);
+    const db = Math.abs(b - targetHSB.b);
+    // Hue wraps around 360
+    const hDiff = Math.min(dh, 360 - dh);
+    const score = 100 - (hDiff / 1.8 + ds + db) / 3;
+    return Math.max(0, Math.round(score));
+  };
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    const pct = similarity();
+    if (pct >= 95) {
+      onComplete();
+    } else {
+      onError(`[BLUE ALERT] Clone mismatch detected! CSS fingerprint divergence: ${100-pct}%. Domain blacklist scan initiated.`);
+      setTimeout(() => setSubmitted(false), 1500);
+    }
+  };
 
   return (
-    <div className="flex flex-col gap-4">
-      <h3 className="text-xl font-bold text-red-500">Payload Obfuscation</h3>
-      <p className="text-sm">Carefully move the mouse cursor from START to payload DROP without touching the AV Walls (Red).</p>
-      
-      <div className="relative w-80 h-80 bg-red-900 border-2 border-red-500" onMouseLeave={() => setFailed(true)}>
-         {/* Safe Path */}
-         <div className="absolute top-0 left-0 w-20 h-full bg-slate-900" onMouseEnter={(e) => e.stopPropagation()} />
-         <div className="absolute top-32 left-0 w-full h-20 bg-slate-900" onMouseEnter={(e) => e.stopPropagation()} />
-         <div className="absolute top-0 right-0 w-20 h-full bg-slate-900" onMouseEnter={(e) => e.stopPropagation()} />
-         
-         <div className="absolute top-2 left-2 bg-green-500 text-black px-2 py-1 font-bold text-xs pointer-events-none">START</div>
-         
-         <div 
-           className="absolute bottom-2 right-2 bg-yellow-500 text-black px-4 py-2 font-bold cursor-pointer hover:bg-yellow-400"
-           onMouseEnter={(e) => e.stopPropagation()}
-           onClick={() => onComplete()}
-         >
-           DROP
-         </div>
-         
-         {/* Red Walls (Fail zones) */}
-         <div className="absolute top-0 left-20 w-60 h-32 bg-red-500/20" onMouseEnter={() => setFailed(true)} />
-         <div className="absolute top-52 left-20 w-40 h-28 bg-red-500/20" onMouseEnter={() => setFailed(true)} />
+    <div className="flex flex-col gap-4 font-mono">
+      <h3 className="text-xl font-bold text-red-500">Shadow Mirroring</h3>
+      <p className="text-xs text-gray-400">Match the target login-page CSS color exactly. Must be ≥95% accurate or Blue Team is alerted.</p>
+
+      <div className="flex gap-4 items-stretch">
+        <div className="flex-1 flex flex-col items-center gap-1">
+          <div className="text-xs text-gray-500">TARGET</div>
+          <div className="w-full h-20 rounded border-2 border-slate-600" style={{ background: targetColor }} />
+        </div>
+        <div className="flex-1 flex flex-col items-center gap-1">
+          <div className="text-xs text-gray-500">YOUR CLONE</div>
+          <div className="w-full h-20 rounded border-2 border-slate-600" style={{ background: userColor }} />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2 text-xs">
+        {([['H (Hue)', h, setH, 0, 359] as const, ['S (Saturation)', s, setS, 0, 100] as const, ['B (Brightness)', b, setB, 0, 100] as const]).map(([label, val, setter, min, max]) => (
+          <div key={label} className="flex flex-col gap-1">
+            <span className="text-gray-400">{label}: <span className="text-yellow-400">{val}{label.startsWith('H') ? '°' : '%'}</span></span>
+            <input type="range" min={min} max={max} value={val} onChange={e => setter(Number(e.target.value))}
+              className="w-full accent-red-500" />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-gray-500">Similarity: <span className={similarity() >= 95 ? 'text-green-400' : 'text-yellow-400'}>{similarity()}%</span></span>
+        <button
+          onClick={handleSubmit}
+          disabled={submitted}
+          className="bg-red-900 border border-red-500 hover:bg-red-800 text-white font-bold px-4 py-2 text-sm disabled:opacity-50"
+        >DEPLOY CLONE</button>
       </div>
     </div>
   );
 };
 
 // 3. Cloner A
-export const CertificateForgery: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+export const CertificateForgery: React.FC<{ onComplete: () => void, onError: (msg: string) => void }> = ({ onComplete, onError }) => {
   const [serial, setSerial] = useState("");
   const [issuer, setIssuer] = useState("");
   const [timer, setTimer] = useState(15);
@@ -89,7 +163,7 @@ export const CertificateForgery: React.FC<{ onComplete: () => void }> = ({ onCom
 
   useEffect(() => {
     if (timer <= 0) {
-      alert("Certificate Expired. Generator Timeout.");
+      onError("Certificate Expired. Generator Timeout.");
       setTimer(15);
       setSerial("");
       setIssuer("");
@@ -143,7 +217,7 @@ export const CertificateForgery: React.FC<{ onComplete: () => void }> = ({ onCom
 };
 
 // 4. Cloner B
-export const DOMManipulation: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+export const DOMManipulation: React.FC<{ onComplete: () => void, onError: (msg: string) => void }> = ({ onComplete, onError }) => {
   const [blocks, setBlocks] = useState([
     { id: 1, text: '<div class="hidden-payload">' },
     { id: 2, text: '<img src="trusted-logo.png" />' },
@@ -192,7 +266,7 @@ export const DOMManipulation: React.FC<{ onComplete: () => void }> = ({ onComple
 };
 
 // 5. Scout A
-export const PortScanning: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+export const PortScanning: React.FC<{ onComplete: () => void, onError: (msg: string) => void }> = ({ onComplete, onError }) => {
   const [cards, setCards] = useState([
     { id: 1, val: 80, matched: false, flipped: false },
     { id: 2, val: 80, matched: false, flipped: false },
@@ -214,7 +288,7 @@ export const PortScanning: React.FC<{ onComplete: () => void }> = ({ onComplete 
       
       if (c1?.val === 'HoneyPot' || c2?.val === 'HoneyPot') {
          setTimeout(() => {
-            alert("HoneyPot Triggered! Scanner Reset.");
+            onError("HoneyPot Triggered! Scanner Reset.");
             setCards(cards.map(c => ({...c, flipped: false, matched: false})).sort(() => Math.random() - 0.5));
             setFlippedIds([]);
          }, 800);
@@ -266,7 +340,7 @@ export const PortScanning: React.FC<{ onComplete: () => void }> = ({ onComplete 
 };
 
 // 6. Scout B
-export const CredentialHarvester: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+export const CredentialHarvester: React.FC<{ onComplete: () => void, onError: (msg: string) => void }> = ({ onComplete, onError }) => {
   const [packets, setPackets] = useState<{id: number, text: string, type: string, top: number}[]>([]);
   const [score, setScore] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);

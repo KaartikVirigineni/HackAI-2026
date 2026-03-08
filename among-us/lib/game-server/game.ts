@@ -4,23 +4,18 @@ export const ROLES: Record<string, any> = {
   // RED TEAM
   'The Author': {
     team: 'red',
-    A: { name: 'Behavioral Profiling', controlChange: -6, effect: 'blur_blue', duration: 15000 },
-    B: { name: 'Payload Obfuscation', controlChange: -8, effect: 'slow_sandbox', duration: 20000 }
+    A: { name: 'Forensic Log Analysis', controlChange: -6 },
+    B: { name: 'SPF/DKIM Verification', controlChange: -8 }
   },
   'The Cloner': {
     team: 'red',
-    A: { name: 'Certificate Forgery', controlChange: -7, effect: 'invert_colors', duration: 20000 },
-    B: { name: 'DOM Manipulation', controlChange: -7, effect: 'disable_hover', duration: 20000 }
+    A: { name: 'Certificate Forgery', controlChange: -7 },
+    B: { name: 'DOM Manipulation', controlChange: -7 }
   },
   'The Scout': {
     team: 'red',
-    A: { name: 'Port Scanning', controlChange: -6, effect: 'fake_tasks', duration: 30000 },
-    B: { name: 'Credential Harvester', controlChange: -8, effect: 'lock_terminal', duration: 15000 }
-  },
-  'The Delivery Lead': {
-    team: 'red',
-    A: { name: 'SMTP Relay Setup', controlChange: -6, effect: 'slow_audit', duration: 20000 },
-    B: { name: 'Botnet Sync', controlChange: -8, effect: 'mute_alerts', duration: 15000 }
+    A: { name: 'Port Scanning', controlChange: -6 },
+    B: { name: 'Credential Harvester', controlChange: -8 }
   },
   
   // BLUE TEAM
@@ -43,6 +38,42 @@ export const ROLES: Record<string, any> = {
     team: 'blue',
     A: { name: 'Security Briefing', controlChange: 5, effect: 'vision_buff', duration: 30000 },
     B: { name: 'Phishing Simulation', controlChange: 7, effect: 'shield', duration: 20000 }
+  },
+  'NetSec Operator': {
+    team: 'blue',
+    A: { name: 'Log Sieve', controlChange: 6 },
+    B: { name: 'ACL Match', controlChange: 6 },
+    C: { name: 'Geo-Fencing', controlChange: 6 }
+  },
+  'CIRT Lead': {
+    team: 'blue',
+    A: { name: 'Process Kill', controlChange: 6 },
+    B: { name: 'Node Isolation', controlChange: 6 },
+    C: { name: 'Priority Triage', controlChange: 6 }
+  },
+  'Detection Engineer': {
+    team: 'blue',
+    A: { name: 'String Match', controlChange: 6 },
+    B: { name: 'Signal to Noise', controlChange: 6 },
+    C: { name: 'C2 Heartbeat', controlChange: 6 }
+  },
+  'DFIR Specialist': {
+    team: 'blue',
+    A: { name: 'Evidence Chain', controlChange: 6 },
+    B: { name: 'Hex Hunt', controlChange: 6 },
+    C: { name: 'Persistence Wipe', controlChange: 6 }
+  },
+  'SecOps Architect': {
+    team: 'blue',
+    A: { name: 'Critical Patching', controlChange: 6 },
+    B: { name: 'Entropy Boost', controlChange: 6 },
+    C: { name: 'Port Closer', controlChange: 6 }
+  },
+  'CTI Analyst': {
+    team: 'blue',
+    A: { name: 'Feed Scrubbing', controlChange: 6 },
+    B: { name: 'APT Attribution', controlChange: 6 },
+    C: { name: 'Threat Map', controlChange: 6 }
   }
 };
 
@@ -91,7 +122,8 @@ interface Player {
   color: string;
   isGhost: boolean;
   abilityCooldown: number;
-  tasks: any;
+  tasks: Record<string, any>;
+  charges: number; // Red team earns charges by completing tasks, spent on sabotages
 }
 
 export class GameState {
@@ -101,6 +133,12 @@ export class GameState {
   bodies: any[];
   controlPercentage: number;
   activeEffects: Record<string, boolean>;
+  sabotageCooldowns: Record<string, number>;
+  logicBomb: {
+    active: boolean;
+    endTime: number;
+    defusers: string[];
+  };
   meeting: {
     active: boolean;
     votes: Record<string, string>;
@@ -117,6 +155,42 @@ export class GameState {
   taskHistory: any[];
   gameTimerId: NodeJS.Timeout | null;
   gameDurationLimit: number;
+  syncIntervalId: NodeJS.Timeout | null;
+
+  getGameState() {
+    let timeRemainingStr = "";
+    if (this.stats.startTime) {
+      const elapsed = Date.now() - (this.stats.startTime + this.stats.hinderanceTimeMs);
+      const remaining = Math.max(0, this.gameDurationLimit - elapsed);
+      const minutes = Math.floor(remaining / 60000);
+      const seconds = Math.floor((remaining % 60000) / 1000);
+      timeRemainingStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    let totalTasks = 0;
+    let completedTasks = 0;
+    for (const p of Object.values(this.players)) {
+      if (p.team === 'blue') {
+        const tasks = Object.values(p.tasks);
+        totalTasks += tasks.length;
+        completedTasks += tasks.filter((t: any) => t.isComplete).length;
+      }
+    }
+    const blueTeamProgress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+
+    return {
+      players: this.players,
+      bodies: this.bodies,
+      gameStatus: this.gameStatus,
+      controlPercent: this.controlPercentage,
+      blueTeamProgress: blueTeamProgress,
+      activeEffects: this.activeEffects,
+      timeRemainingStr: timeRemainingStr,
+      gameStartTime: this.stats.startTime ? this.stats.startTime + this.stats.hinderanceTimeMs : null,
+      logicBomb: this.logicBomb,
+      meeting: this.meeting
+    };
+  }
 
   constructor(io: Server, roomId: string) {
     this.io = io;
@@ -137,7 +211,21 @@ export class GameState {
       shield: false,
       total_lockdown: false,
       ceo_fraud_cooldown: false,
-      lockdown_cooldown: false
+      lockdown_cooldown: false,
+      ui_scramble: false,
+      latency_spike: false,
+      power_cut: false
+    };
+    this.sabotageCooldowns = {
+      logicBomb: 0,
+      uiScramble: 0,
+      latencySpike: 0,
+      powerCut: 0
+    };
+    this.logicBomb = {
+      active: false,
+      endTime: 0,
+      defusers: []
     };
     this.meeting = {
       active: false,
@@ -154,13 +242,81 @@ export class GameState {
     this.hostId = null;
     this.taskHistory = [];
     this.gameTimerId = null;
+    this.syncIntervalId = null;
     this.gameDurationLimit = 300000; // 5 minutes in ms
   }
 
   startGame() {
     if (this.gameStatus === 'playing') return;
+    
+    // Assign roles dynamically here based on total count
+    const playerIds = Object.keys(this.players);
+    const numPlayers = playerIds.length;
+    
+    if (numPlayers < 4) {
+       console.log(`[GAME] Refusing to start game in room ${this.roomId}: insufficient players (${numPlayers}/4).`);
+       this.io.to(this.roomId).emit('error', 'Strict 4-player minimum required to start.');
+       return;
+    }
+
+    console.log(`[GAME] Starting simulation in room ${this.roomId} with ${numPlayers} agents.`);
     this.gameStatus = 'playing';
     this.stats.startTime = Date.now();
+    this.stats.hinderanceTimeMs = 0; // Reset for new game
+    
+    // Assign roles dynamically here based on total count
+    let numRed = 1; // Default
+    if (numPlayers >= 7) { // 5-6 blue, 2 red = 7-8 players total
+       numRed = 2;
+    } else if (numPlayers >= 5) { // 4-5 blue, 1 red = 5-6 players total
+       numRed = 1;
+    }
+
+    // Roles assignment
+    const shuffledIds = [...playerIds].sort(() => 0.5 - Math.random());
+    const redIds = shuffledIds.slice(0, numRed);
+    const blueIds = shuffledIds.slice(numRed);
+
+    const redRoles = Object.keys(ROLES).filter((k) => ROLES[k].team === 'red');
+    const blueRoles = Object.keys(ROLES).filter((k) => ROLES[k].team === 'blue');
+
+    const assignedRedRole = redRoles[Math.floor(Math.random() * redRoles.length)];
+
+    redIds.forEach(id => {
+       this.players[id].team = 'red';
+       this.players[id].role = assignedRedRole;
+       
+       const roleConfig = ROLES[assignedRedRole];
+       if (roleConfig) {
+          for (const taskKey of Object.keys(roleConfig)) {
+             if (taskKey !== 'team') {
+                const coords = this.getSafeCoordInRoom();
+                this.players[id].tasks[taskKey] = { x: coords.x, y: coords.y, color: this.players[id].color, isComplete: false };
+             }
+          }
+       }
+    });
+
+    const shuffledBlueRoles = [...blueRoles].sort(() => 0.5 - Math.random());
+
+    blueIds.forEach(id => {
+       const roleKey = shuffledBlueRoles.length > 0 ? shuffledBlueRoles.shift()! : blueRoles[Math.floor(Math.random() * blueRoles.length)];
+       this.players[id].team = 'blue';
+       this.players[id].role = roleKey;
+
+       const roleConfig = ROLES[roleKey];
+       if (roleConfig) {
+          for (const taskKey of Object.keys(roleConfig)) {
+             if (taskKey !== 'team') {
+                const coords = this.getSafeCoordInRoom();
+                this.players[id].tasks[taskKey] = { x: coords.x, y: coords.y, color: this.players[id].color, isComplete: false };
+             }
+          }
+       }
+    });
+
+    this.io.to(this.roomId).emit('players', this.players);
+
     this.io.to(this.roomId).emit('game_started', { 
        elapsedTime: 0, 
        durationLimit: this.gameDurationLimit 
@@ -176,11 +332,19 @@ export class GameState {
           this.resetGame();
        }
     }, this.gameDurationLimit);
+
+    // Dynamic Sync Loop inside the game state to ensure it starts when the game starts
+    if (this.syncIntervalId) clearInterval(this.syncIntervalId);
+    this.syncIntervalId = setInterval(() => {
+        this.io.to(this.roomId).emit('sync_state', this.getGameState());
+    }, 1000);
   }
 
   checkWinConditions() {
     if (this.gameStatus === 'lobby') return false;
 
+    const playerIds = Object.keys(this.players);
+    const numPlayers = playerIds.length;
     let blueAlive = 0;
     let redAlive = 0;
 
@@ -192,26 +356,30 @@ export class GameState {
     }
 
     // Require at least 2 players to end the game by kill ratio
-    if (Object.keys(this.players).length >= 2) {
+    if (numPlayers >= 2) {
       if (blueAlive === 0) {
         const elo = this.calculateElo('red');
-        this.io.emit('game_over', { winner: 'red', reason: 'All Admins Defeated', ...elo });
+        this.io.to(this.roomId).emit('game_over', { winner: 'red', reason: 'All Admins Defeated', ...elo });
+        this.resetGame();
         return true;
       } else if (redAlive === 0) {
         const elo = this.calculateElo('blue');
-        this.io.emit('game_over', { winner: 'blue', reason: 'All APTs Ejected', ...elo });
+        this.io.to(this.roomId).emit('game_over', { winner: 'blue', reason: 'All APTs Ejected', ...elo });
+        this.resetGame();
         return true;
       }
     }
 
-    // Control percentage can still end the game even with 1 player for testing
+    // Control percentage can still end the game even with 1 player for testing (retained for now but 4-player min enforced at start)
     if (this.controlPercentage >= 100) {
       const elo = this.calculateElo('blue');
-      this.io.emit('game_over', { winner: 'blue', reason: 'Control reached 100%', ...elo });
+      this.io.to(this.roomId).emit('game_over', { winner: 'blue', reason: 'Control reached 100%', ...elo });
+      this.resetGame();
       return true;
     } else if (this.controlPercentage <= 0) {
       const elo = this.calculateElo('red');
-      this.io.emit('game_over', { winner: 'red', reason: 'Control reached 0%', ...elo });
+      this.io.to(this.roomId).emit('game_over', { winner: 'red', reason: 'Control reached 0%', ...elo });
+      this.resetGame();
       return true;
     }
     
@@ -290,13 +458,36 @@ export class GameState {
     for (const key of Object.keys(this.activeEffects)) {
        this.activeEffects[key] = false;
     }
-    this.players = {}; 
-    this.hostId = null;
+    
+    // Reset players instead of deleting them
+    for (const id of Object.keys(this.players)) {
+       this.players[id].team = 'pending';
+       this.players[id].role = 'Awaiting Assignment...';
+       this.players[id].isGhost = false;
+       this.players[id].tasks = {};
+       this.players[id].abilityCooldown = 0;
+       this.players[id].charges = 0;
+       console.log(`[RESET] Player ${this.players[id].name} (${id}) reset to pending.`);
+    }
+
+    console.log(`[GAME] Room ${this.roomId} reset to lobby state.`);
+
     this.taskHistory = [];
     if (this.gameTimerId) {
        clearTimeout(this.gameTimerId);
        this.gameTimerId = null;
     }
+    if (this.syncIntervalId) {
+       clearInterval(this.syncIntervalId);
+       this.syncIntervalId = null;
+    }
+    
+    // Use dedicated game_reset event so clients know definitively to return to lobby
+    // This is separate from game_status_update to avoid race conditions with startGame
+    this.io.to(this.roomId).emit('game_reset', { hostId: this.hostId });
+    this.io.to(this.roomId).emit('game_status_update', { status: this.gameStatus, hostId: this.hostId });
+    this.io.to(this.roomId).emit('players', this.players);
+    this.io.to(this.roomId).emit('control_update', this.controlPercentage);
   }
 
   addPlayer(socketId: string, role: any, name = 'Agent') {
@@ -318,9 +509,8 @@ export class GameState {
     const spawnX = 1024 + Math.cos(spawnAngle) * spawnRadius;
     const spawnY = 1024 + Math.sin(spawnAngle) * spawnRadius;
 
-    // Safe task coordinate logic: Pick a random room and spawn strictly inside it
-    const taskACoords = this.getSafeCoordInRoom();
-    const taskBCoords = this.getSafeCoordInRoom();
+    // Tasks initialized empty. Will be populated on startGame when roles are assigned.
+    const playerTasks: Record<string, any> = {};
 
     this.players[socketId] = {
       x: spawnX,
@@ -331,10 +521,8 @@ export class GameState {
       color: playerColor,
       isGhost: false,
       abilityCooldown: 0,
-      tasks: {
-        A: { x: taskACoords.x, y: taskACoords.y, color: playerColor, isComplete: false },
-        B: { x: taskBCoords.x, y: taskBCoords.y, color: playerColor, isComplete: false }
-      }
+      tasks: playerTasks,
+      charges: 0
     };
 
     // Auto-start if hit 8
@@ -373,7 +561,7 @@ export class GameState {
   }
   
   // Tasks mapping (team & effect mapped)
-  handleTask(socketId: string, taskType: 'A' | 'B') {
+  handleTask(socketId: string, taskType: string) {
     if (this.gameStatus === 'lobby') return;
     const player = this.players[socketId];
     if (!player || player.isGhost || this.meeting.active) return;
@@ -386,33 +574,28 @@ export class GameState {
     const roleData = ROLES[player.role];
     if (!roleData) return;
 
-    const taskData = roleData[taskType]; // 'A' or 'B'
+    const taskData = roleData[taskType]; // E.g. 'A', 'B', 'C'
     if (!taskData) return;
     
-    // Check if task is already complete
-    if (player.tasks[taskType].isComplete) return;
+    // Check if task exists for this player and is already complete
+    if (!player.tasks[taskType] || player.tasks[taskType].isComplete) return;
 
     // Record task for Synergy
     this.taskHistory.push({ role: player.role, taskKey: taskType, time: Date.now() });
     this.checkSynergies();
 
-    // Apply control change
-    this.controlPercentage += taskData.controlChange;
-    // ... mark as complete locally
+    // mark as complete and apply control shift
     player.tasks[taskType].isComplete = true;
-    
-    // Set timeout to respawn task in new location after 10 seconds
-    setTimeout(() => {
-        const p = this.players[socketId];
-        if (p && p.tasks && p.tasks[taskType]) {
-            p.tasks[taskType].isComplete = false;
-            const newCoords = this.getSafeCoordInRoom();
-            p.tasks[taskType].x = newCoords.x;
-            p.tasks[taskType].y = newCoords.y;
-            this.io.to(this.roomId).emit('players', this.players);
-        }
-    }, 10000);
+    this.controlPercentage += taskData.controlChange;
 
+    // Red team earns a sabotage charge for completing a task
+    if (player.team === 'red') {
+       player.charges = (player.charges || 0) + 1;
+       console.log(`[CHARGES] ${player.name} earned a charge (${player.charges} total).`);
+       // Notify red player of their updated charges
+       this.io.to(this.roomId).emit('players', this.players);
+    }
+    
     // Clamp to 0-100
     this.controlPercentage = Math.max(0, Math.min(100, this.controlPercentage));
     
@@ -421,7 +604,7 @@ export class GameState {
     }
 
     if (taskData.controlChange < 0) {
-       this.stats.hinderanceTimeMs += 5000; // rough tracking metric
+       this.stats.hinderanceTimeMs += 5000;
     }
 
     // trigger effects/counters
@@ -433,6 +616,8 @@ export class GameState {
     }
 
     this.io.to(this.roomId).emit('control_update', this.controlPercentage);
+    this.io.to(this.roomId).emit('players', this.players); // Emit immediately to update progress bar
+    this.io.to(this.roomId).emit('sync_state', this.getGameState()); // Force sync update
     
     // Check win condition
     this.checkWinConditions();
@@ -442,7 +627,8 @@ export class GameState {
     if (this.gameStatus === 'lobby' || this.meeting.active) return;
     
     const now = Date.now();
-    if (this.stats.lastMeetingTime && now - this.stats.lastMeetingTime < 60000) return;
+    // Reduce cooldown for testing
+    if (this.stats.lastMeetingTime && now - this.stats.lastMeetingTime < 15000) return;
 
     const player = this.players[callerSocketId];
     if (!player || player.isGhost) return;
@@ -543,5 +729,86 @@ export class GameState {
 
     this.io.to(this.roomId).emit('players', this.players);
     this.checkWinConditions();
+  }
+
+  executeSabotage(socketId: string, sabotageType: string) {
+    if (this.gameStatus === 'lobby' || this.meeting.active) return;
+    const player = this.players[socketId];
+    if (!player || player.isGhost || player.team !== 'red') return;
+
+    // Server-side: require at least 2 completed tasks to use sabotage
+    const completedTasks = Object.values(player.tasks).filter((t: any) => t.isComplete).length;
+    if (completedTasks < 2) {
+       console.log(`[SABOTAGE] ${player.name} tried to sabotage but only completed ${completedTasks}/2 tasks.`);
+       return;
+    }
+
+    const now = Date.now();
+    const cooldown = this.sabotageCooldowns[sabotageType] || 0;
+    
+    // Prevent if on cooldown
+    if (now < cooldown) return;
+
+    switch (sabotageType) {
+       case 'logicBomb':
+         // 2 minute cooldown for logic bomb
+         this.sabotageCooldowns.logicBomb = now + 120000;
+         this.logicBomb = {
+            active: true,
+            endTime: now + 45000,
+            defusers: []
+         };
+         this.io.to(this.roomId).emit('logic_bomb_started', this.logicBomb);
+         
+         // Detonation
+         setTimeout(() => {
+            if (this.gameStatus === 'playing' && this.logicBomb.active) {
+                const elo = this.calculateElo('red');
+                this.io.to(this.roomId).emit('game_over', { winner: 'red', reason: 'Logic Bomb Detonated', ...elo });
+                this.resetGame();
+            }
+         }, 45000);
+         break;
+       case 'uiScramble':
+         this.sabotageCooldowns.uiScramble = now + 45000;
+         this.triggerEffect('ui_scramble', 20000);
+         break;
+       case 'latencySpike':
+         this.sabotageCooldowns.latencySpike = now + 45000;
+         this.triggerEffect('latency_spike', 20000);
+         break;
+       case 'powerCut':
+         this.sabotageCooldowns.powerCut = now + 45000;
+         this.triggerEffect('power_cut', 20000);
+         break;
+    }
+    
+    this.io.to(this.roomId).emit('sabotage_cooldowns', this.sabotageCooldowns);
+  }
+
+  defuseLogicBomb(socketId: string, isDefusing: boolean) {
+     if (this.gameStatus === 'lobby' || !this.logicBomb.active) return;
+     const player = this.players[socketId];
+     if (!player || player.isGhost || player.team !== 'blue') return;
+
+     if (isDefusing) {
+        if (!this.logicBomb.defusers.includes(socketId)) {
+           this.logicBomb.defusers.push(socketId);
+        }
+     } else {
+        this.logicBomb.defusers = this.logicBomb.defusers.filter(id => id !== socketId);
+     }
+     
+     // Check defusal condition: At least 2 different Blue roles
+     const rolesDefusing = new Set(this.logicBomb.defusers.map(id => this.players[id]?.role));
+     
+     if (rolesDefusing.size >= 2) {
+        this.logicBomb.active = false;
+        this.logicBomb.defusers = [];
+        this.io.to(this.roomId).emit('logic_bomb_defused');
+        console.log("[SABOTAGE] Logic Bomb Defused safely.");
+     } else {
+        this.io.to(this.roomId).emit('logic_bomb_updated', this.logicBomb.defusers);
+     }
   }
 }

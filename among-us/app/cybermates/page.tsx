@@ -402,12 +402,12 @@ export default function PhishingPier() {
 
             <button
               onClick={() => {
-                 setJoinError(null);
-                 startBgMusic();
-                 if (socket) {
-                   const username = localStorage.getItem("cybermates_username");
-                   socket.emit('create_game', { username });
-                 }
+                setJoinError(null);
+                startBgMusic();
+                if (socket) {
+                  const username = localStorage.getItem("cybermates_username");
+                  socket.emit('create_game', { username });
+                }
               }}
               onMouseEnter={playHover}
               className="w-full font-bold py-3 mb-4 rounded bg-cyber-dark border border-cyber-blue hover:bg-cyber-darker text-cyber-blue box-glow-blue transition-all ease-in-out"
@@ -428,12 +428,12 @@ export default function PhishingPier() {
               onChange={(e) => setTeamCode(e.target.value.toUpperCase())}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && teamCode.trim() !== '') {
-                   setJoinError(null);
-                   startBgMusic();
-                   if (socket) {
-                     const username = localStorage.getItem("cybermates_username");
-                     socket.emit('join_game', { username, teamCode: teamCode.trim() });
-                   }
+                  setJoinError(null);
+                  startBgMusic();
+                  if (socket) {
+                    const username = localStorage.getItem("cybermates_username");
+                    socket.emit('join_game', { username, teamCode: teamCode.trim() });
+                  }
                 }
               }}
               className="w-full bg-cyber-dark border border-cyber-green text-cyber-green p-3 rounded text-center text-xl tracking-widest focus:outline-none focus:ring-2 focus:ring-cyber-green mb-4"

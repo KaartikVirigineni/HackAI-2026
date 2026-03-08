@@ -152,7 +152,7 @@ export default function CyberHome() {
             onClick={() => router.push('/learn')}
             className="flex-1 max-w-md relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-blue p-8 sm:p-10 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(0,243,255,0.4)] duration-300"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-cyber-blue/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-linear-to-br from-cyber-blue/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             
             <div className="relative z-10 flex flex-col items-center gap-4 text-center">
               <div className="w-16 h-16 rounded-full bg-cyber-blue/10 border border-cyber-blue flex items-center justify-center text-cyber-blue mb-2 group-hover:bg-cyber-blue group-hover:text-cyber-dark transition-colors duration-300">
@@ -175,7 +175,7 @@ export default function CyberHome() {
             onClick={() => router.push('/chat')}
             className="flex-1 max-w-md relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-green p-8 sm:p-10 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(0,255,157,0.4)] duration-300"
           >
-            <div className="absolute inset-0 bg-gradient-to-bl from-cyber-green/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-linear-to-bl from-cyber-green/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             
             <div className="relative z-10 flex flex-col items-center gap-4 text-center">
               <div className="w-16 h-16 rounded-full bg-cyber-green/10 border border-cyber-green flex items-center justify-center text-cyber-green mb-2 group-hover:bg-cyber-green group-hover:text-cyber-dark transition-colors duration-300 shadow-[0_0_15px_rgba(0,255,157,0.2)]">
@@ -198,12 +198,12 @@ export default function CyberHome() {
         {/* Bottom Section: Leaderboard */}
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center gap-4 mb-6">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-cyber-blue/50"></div>
+            <div className="h-px flex-1 bg-linear-to-r from-transparent to-cyber-blue/50"></div>
             <h2 className="text-2xl font-orbitron font-bold tracking-widest text-cyber-blue uppercase flex items-center gap-3">
               <svg className="w-6 h-6 text-cyber-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
               Global Leaderboard
             </h2>
-            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-cyber-blue/50"></div>
+            <div className="h-px flex-1 bg-linear-to-l from-transparent to-cyber-blue/50"></div>
           </div>
           
           <div className="bg-cyber-darker/60 backdrop-blur-sm border border-cyber-blue/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,243,255,0.05)]">

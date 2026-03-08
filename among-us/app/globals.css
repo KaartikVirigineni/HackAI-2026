@@ -98,18 +98,22 @@ input:-webkit-autofill:active{
   max-width: 100% !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
+  background: transparent !important;
+  border: none !important;
 }
 
 .lk-control-bar {
   display: flex !important;
   flex-wrap: nowrap !important;
   align-items: center !important;
-  justify-content: space-evenly !important;
-  padding: 0.25rem !important;
-  gap: 0.25rem !important;
+  justify-content: center !important;
+  padding: 0.5rem !important;
+  gap: 0.75rem !important;
   width: 100% !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
+  background: transparent !important;
+  border: none !important;
 }
 
 .lk-button-group,
@@ -118,23 +122,65 @@ input:-webkit-autofill:active{
   flex-wrap: nowrap !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 0.25rem !important;
-  flex: 1 1 auto !important;
+  gap: 0.5rem !important;
+  flex: 0 1 auto !important;
   min-width: 0 !important;
 }
 
 .lk-button {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  padding: 0.25rem 0.5rem !important;
+  background: rgba(0, 243, 255, 0.1) !important;
+  border: 1px solid rgba(0, 243, 255, 0.3) !important;
+  border-radius: 8px !important;
+  color: #00f3ff !important;
+  font-family: var(--font-orbitron) !important;
+  font-size: 0.7rem !important;
+  padding: 0.5rem !important;
+  transition: all 0.3s ease !important;
 }
 
-.lk-button svg {
-  width: 1.25rem !important;
-  height: 1.25rem !important;
+.lk-button:hover {
+  background: rgba(0, 243, 255, 0.2) !important;
+  border-color: #00f3ff !important;
+  box-shadow: 0 0 10px rgba(0, 243, 255, 0.3) !important;
 }
 
 .lk-disconnect-button {
-  flex: 0 0 auto !important;
-  padding: 0.25rem 0.5rem !important;
+  background: rgba(255, 0, 60, 0.1) !important;
+  border: 1px solid rgba(255, 0, 60, 0.4) !important;
+  color: #ff003c !important;
 }
+
+.lk-disconnect-button:hover {
+  background: rgba(255, 0, 60, 0.2) !important;
+  border-color: #ff003c !important;
+  box-shadow: 0 0 10px rgba(255, 0, 60, 0.3) !important;
+}
+
+.lk-participant-tile {
+  background: rgba(5, 11, 20, 0.8) !important;
+  border: 1px solid rgba(0, 243, 255, 0.2) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.lk-participant-name {
+  font-family: var(--font-orbitron) !important;
+  font-size: 0.65rem !important;
+  color: #00f3ff !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+}
+
+.lk-participant-metadata-item {
+  display: none !important; /* Hide unnecessary icons */
+}
+
+/* Hide scrollbar for participant list */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

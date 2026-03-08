@@ -491,7 +491,7 @@ export default function PhishingPier() {
            <h1 className="text-5xl font-bold mb-4 text-cyber-blue animate-pulse-slow text-glow-blue">PRE-GAME LOBBY</h1>
            <p className="text-xl text-gray-300 mb-8 border-b border-gray-700 pb-4">Lobby Code: <span className="text-white font-bold tracking-widest bg-cyber-dark p-2 border border-gray-600 rounded select-all">{teamCode}</span></p>
            
-           <div className="flex gap-8 w-full max-w-7xl h-[40rem]">
+           <div className="flex flex-col md:flex-row gap-4 md:gap-8 w-full max-w-7xl h-auto md:h-[40rem]">
               {/* Mission Debrief Section */}
               <div className="flex-[2] bg-cyber-darker border border-cyber-blue rounded p-6 overflow-y-auto box-glow-blue thin-scrollbar">
                  <MissionDebrief />
@@ -499,10 +499,10 @@ export default function PhishingPier() {
 
               {/* Connected Players List */}
               <div className="flex-1 bg-cyber-darker border border-cyber-green rounded p-6 overflow-y-auto box-glow-green flex flex-col">
-                 <h2 className="text-2xl text-cyber-green mb-6 font-bold border-b border-green-800 pb-2">Agents Connected ({Object.keys(players).length}/8)</h2>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 content-start">
+                  <h2 className="text-xl md:text-2xl text-cyber-green mb-4 md:mb-6 font-bold border-b border-green-800 pb-2">Agents Connected ({Object.keys(players).length}/8)</h2>
+                 <div className="grid grid-cols-1 gap-3 md:gap-4 flex-1 content-start">
                     {Object.entries(players).map(([id, p]) => (
-                       <div key={id} className={`flex items-center gap-3 p-3 rounded border border-gray-700 bg-cyber-dark ${id === socket?.id ? 'ring-2 ring-white' : ''}`}>
+                       <div key={id} className={`flex items-center gap-2 md:gap-3 p-2 md:p-3 rounded border border-gray-700 bg-cyber-dark ${id === socket?.id ? 'ring-2 ring-white' : ''}`}>
                           <div className="w-6 h-6 rounded-full" style={{ backgroundColor: p.color, boxShadow: `0 0 10px ${p.color}` }} />
                           <div className="font-bold text-gray-300 truncate">
                              {id === socket?.id ? 'YOU' : p.name.toUpperCase()}
@@ -514,7 +514,7 @@ export default function PhishingPier() {
               </div>
 
               {/* Host Controls */}
-              <div className="w-80 flex flex-col justify-center items-center bg-cyber-darker border border-cyber-blue rounded p-6 box-glow-blue">
+              <div className="w-full md:w-80 flex flex-col justify-center items-center bg-cyber-darker border border-cyber-blue rounded p-6 box-glow-blue">
                  {socket?.id === hostId ? (
                    <>
                       <h3 className="text-xl text-yellow-400 font-bold mb-4 text-center">HOST CONTROLS</h3>

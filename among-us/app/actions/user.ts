@@ -13,8 +13,17 @@ export async function getUserProfile(username: string) {
       return { error: "User not found" };
     }
     
+    // Calculate rank out of points directly to ignore stale DB records
+    let newRank = "Script Kiddie";
+    const newPoints = user.points || 0;
+    if (newPoints >= 50000) newRank = "CrashOut Mastermind";
+    else if (newPoints >= 30000) newRank = "Elite Penetration Tester";
+    else if (newPoints >= 15000) newRank = "Security Analyst";
+    else if (newPoints >= 5000) newRank = "Network Defender";
+    else if (newPoints >= 1000) newRank = "Cyber Novice";
+    
     // Convert lean document to plain JS object if needed, it should already be close.
-    return { success: true, user: user as { username: string, rank: string, points: number, createdAt: Date } };
+    return { success: true, user: { ...user, rank: newRank } as { username: string, rank: string, points: number, createdAt: Date } };
   } catch (error: unknown) {
     console.error("Profile error:", error);
     return { error: "Failed to fetch user profile" };
@@ -31,8 +40,19 @@ export async function getLeaderboard() {
       .limit(10)
       .select('username rank points -_id')
       .lean();
+      
+    const updatedLeaderboard = leaderboard.map((user) => {
+      let newRank = "Script Kiddie";
+      const newPoints = user.points || 0;
+      if (newPoints >= 50000) newRank = "CrashOut Mastermind";
+      else if (newPoints >= 30000) newRank = "Elite Penetration Tester";
+      else if (newPoints >= 15000) newRank = "Security Analyst";
+      else if (newPoints >= 5000) newRank = "Network Defender";
+      else if (newPoints >= 1000) newRank = "Cyber Novice";
+      return { ...user, rank: newRank };
+    });
     
-    return { success: true, leaderboard: leaderboard as { username: string, rank: string, points: number }[] };
+    return { success: true, leaderboard: updatedLeaderboard as { username: string, rank: string, points: number }[] };
   } catch (error: unknown) {
     console.error("Leaderboard error:", error);
     return { error: "Failed to fetch leaderboard" };
@@ -52,12 +72,12 @@ export async function updateUserPoints(username: string, earnedPoints: number) {
     const newPoints = (user.points || 0) + earnedPoints;
     
     // Calculate new rank
-    let newRank = "Recruit";
-    if (newPoints >= 50000) newRank = "Ghost Protocol";
-    else if (newPoints >= 30000) newRank = "Elite Sentinel";
-    else if (newPoints >= 15000) newRank = "Cyber Agent";
-    else if (newPoints >= 5000) newRank = "Operative";
-    else if (newPoints >= 1000) newRank = "Specialist";
+    let newRank = "Script Kiddie";
+    if (newPoints >= 50000) newRank = "CrashOut Mastermind";
+    else if (newPoints >= 30000) newRank = "Elite Penetration Tester";
+    else if (newPoints >= 15000) newRank = "Security Analyst";
+    else if (newPoints >= 5000) newRank = "Network Defender";
+    else if (newPoints >= 1000) newRank = "Cyber Novice";
     
     await User.updateOne(
       { username },

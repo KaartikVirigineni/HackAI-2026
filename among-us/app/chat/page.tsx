@@ -17,7 +17,7 @@ export default function ChatPage() {
   
   const [messages, setMessages] = useState<ChatMessage[]>([{
      role: "system",
-     parts: [{ text: "Initializing Secure Connection...\nI am your AI Mentor, powered by Gemini. Upload your syllabus below, or ask me any cybersecurity question." }]
+     parts: [{ text: "Initializing Secure Connection...\nHi I am your AI Mentor, upload your syllabus or any other documents you have questions or would like to learn about, or ask me other questions you have." }]
   }]);
   
   const [input, setInput] = useState("");
@@ -128,7 +128,7 @@ export default function ChatPage() {
         }]);
 
     } catch (err: unknown) {
-        setError((err as Error).message || "Connection to Gemini failed.");
+        setError((err as Error).message || "Connection to AI Mentor failed.");
     } finally {
         setIsTyping(false);
     }
@@ -149,7 +149,7 @@ export default function ChatPage() {
             <div>
                <h1 className="text-xl font-orbitron font-bold text-cyber-green tracking-widest uppercase text-glow-green flex items-center gap-3">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-                  Gemini AI Mentor
+                  AI Mentor
                </h1>
                <div className="text-xs font-mono text-gray-400 mt-0.5">Secure Exam Prep Channel</div>
             </div>
@@ -167,7 +167,7 @@ export default function ChatPage() {
             </h2>
             
             <p className="text-xs text-gray-400 mb-6 font-inter">
-               Upload your cybersecurity course syllabus (PDF, DOCX, TXT, MD) so Gemini can act as your personalized tutor to help you prepare for exams!
+               Upload your syllabus or any other documents you have questions or would like to learn about, or ask me other questions you have!
             </p>
 
             <input 

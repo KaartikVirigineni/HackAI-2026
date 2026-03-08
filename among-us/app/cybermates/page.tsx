@@ -331,6 +331,13 @@ export default function PhishingPier() {
       {/* Pre-Game Lobby Overlay */}
       {joined && gameStatus === 'lobby' && (
         <div className="absolute inset-0 z-40 bg-black/90 flex flex-col items-center justify-center p-8 backdrop-blur-sm">
+           <button 
+             onClick={() => window.location.href = '/home'}
+             className="absolute top-8 left-8 text-cyber-blue/60 hover:text-cyber-blue text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+           >
+             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+             RETURN HOME
+           </button>
            <h1 className="text-5xl font-bold mb-4 text-cyber-blue animate-pulse-slow text-glow-blue">PRE-GAME LOBBY</h1>
            <p className="text-xl text-gray-300 mb-8 border-b border-gray-700 pb-4">Lobby Code: <span className="text-white font-bold tracking-widest bg-cyber-dark p-2 border border-gray-600 rounded select-all">{teamCode}</span></p>
            

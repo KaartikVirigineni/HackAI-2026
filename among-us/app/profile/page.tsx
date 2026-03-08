@@ -4,15 +4,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getUserProfile } from "@/app/actions/user";
 import { updateUsername, updateEmail, updatePassword, deleteAccount } from "@/app/actions/profile";
+import { useCyberAudio } from "@/app/hooks/useCyberAudio";
 
 type UserProfile = {
   username: string;
   rank: string;
   points: number;
+  createdAt?: string | Date;
 };
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { playHover } = useCyberAudio();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -171,6 +174,7 @@ export default function ProfilePage() {
         <header className="flex items-center justify-between mb-12">
           <button 
             onClick={() => router.push('/home')}
+            onMouseEnter={playHover}
             className="flex items-center gap-2 text-cyber-blue hover:text-white transition-colors duration-300 group"
           >
             <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
@@ -197,6 +201,11 @@ export default function ProfilePage() {
                 {user.points?.toLocaleString() || '0'} PTS
               </span>
             </div>
+            {user.createdAt && (
+              <p className="text-cyber-blue/60 text-xs font-mono mb-4 uppercase tracking-wider">
+                Agent Active Since: {new Date(user.createdAt).toLocaleDateString()}
+              </p>
+            )}
             <p className="text-gray-400 text-sm max-w-lg">
               Manage your agent credentials and databank access. Warning: Account deletion is permanent.
             </p>
@@ -207,6 +216,7 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <button 
             onClick={() => openModal("username")}
+            onMouseEnter={playHover}
             className="bg-cyber-darker border border-cyber-blue/20 hover:border-cyber-blue/60 p-6 rounded-xl text-left transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,243,255,0.1)] group"
           >
             <h3 className="text-cyber-blue font-orbitron font-bold text-lg mb-2 group-hover:text-glow-blue transition-all">Change Username</h3>
@@ -215,6 +225,7 @@ export default function ProfilePage() {
 
           <button 
             onClick={() => openModal("email")}
+            onMouseEnter={playHover}
             className="bg-cyber-darker border border-cyber-blue/20 hover:border-cyber-blue/60 p-6 rounded-xl text-left transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,243,255,0.1)] group"
           >
             <h3 className="text-cyber-blue font-orbitron font-bold text-lg mb-2 group-hover:text-glow-blue transition-all">Change Email</h3>
@@ -223,6 +234,7 @@ export default function ProfilePage() {
 
           <button 
             onClick={() => openModal("password")}
+            onMouseEnter={playHover}
             className="bg-cyber-darker border border-cyber-blue/20 hover:border-cyber-blue/60 p-6 rounded-xl text-left transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,243,255,0.1)] group"
           >
             <h3 className="text-cyber-blue font-orbitron font-bold text-lg mb-2 group-hover:text-glow-blue transition-all">Change Password</h3>
@@ -231,6 +243,7 @@ export default function ProfilePage() {
 
           <button 
             onClick={() => openModal("delete")}
+            onMouseEnter={playHover}
             className="bg-red-900/10 border border-red-500/20 hover:border-red-500/60 p-6 rounded-xl text-left transition-all duration-300 hover:shadow-[0_0_15px_rgba(239,68,68,0.15)] group"
           >
             <h3 className="text-red-400 font-orbitron font-bold text-lg mb-2 group-hover:text-red-300 transition-all">Terminiate Account</h3>
@@ -253,7 +266,7 @@ export default function ProfilePage() {
                 {activeModal === "password" && "Reset Access Code"}
                 {activeModal === "delete" && "DANGER: Terminate Agent"}
               </h3>
-              <button onClick={() => openModal("none")} className="text-gray-400 hover:text-white transition-colors">
+              <button onClick={() => openModal("none")} onMouseEnter={playHover} className="text-gray-400 hover:text-white transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
@@ -384,6 +397,7 @@ export default function ProfilePage() {
                   </div>
                   <button 
                     type="submit" 
+                    onMouseEnter={playHover}
                     disabled={isSubmitting}
                     className="w-full mt-4 bg-red-600 text-white font-orbitron font-bold uppercase tracking-widest py-3 rounded hover:bg-red-500 transition-colors disabled:opacity-50"
                   >

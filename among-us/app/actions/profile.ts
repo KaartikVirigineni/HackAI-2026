@@ -1,6 +1,6 @@
 "use server";
 
-import { openDb } from "@/lib/sqlite";
+import { connectToDatabase, User } from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
 
 export async function updateUsername(oldUsername: string, newUsername: string) {
@@ -13,21 +13,19 @@ export async function updateUsername(oldUsername: string, newUsername: string) {
   }
 
   try {
-    const db = openDb();
+    await connectToDatabase();
     
     // Check if new username is already taken
-    const checkStmt = db.prepare('SELECT username FROM users WHERE username = ?');
-    const existingUser = checkStmt.get(newUsername);
+    const existingUser = await User.findOne({ username: newUsername }).select('_id').lean();
     
     if (existingUser) {
       return { error: "Username already taken." };
     }
 
     // Update username
-    const updateStmt = db.prepare('UPDATE users SET username = ? WHERE username = ?');
-    const result = updateStmt.run(newUsername, oldUsername);
+    const result = await User.updateOne({ username: oldUsername }, { username: newUsername });
     
-    if (result.changes === 0) {
+    if (result.matchedCount === 0) {
       return { error: "User not found." };
     }
 
@@ -44,11 +42,10 @@ export async function updateEmail(username: string, currentPassword: string, new
   }
 
   try {
-    const db = openDb();
+    await connectToDatabase();
 
     // Verify user and password
-    const userStmt = db.prepare('SELECT password FROM users WHERE username = ?');
-    const user = userStmt.get(username) as { password: string } | undefined;
+    const user = await User.findOne({ username }).select('password').lean() as { password: string } | null;
 
     if (!user) {
       return { error: "User not found." };
@@ -60,16 +57,14 @@ export async function updateEmail(username: string, currentPassword: string, new
     }
 
     // Check if new email is already used
-    const checkStmt = db.prepare('SELECT email FROM users WHERE email = ?');
-    const existingEmail = checkStmt.get(newEmail);
+    const existingEmail = await User.findOne({ email: newEmail }).select('_id').lean();
     
     if (existingEmail) {
       return { error: "Email already registered." };
     }
 
     // Update email
-    const updateStmt = db.prepare('UPDATE users SET email = ? WHERE username = ?');
-    updateStmt.run(newEmail, username);
+    await User.updateOne({ username }, { email: newEmail });
 
     return { success: true };
   } catch (error: unknown) {
@@ -84,11 +79,10 @@ export async function updatePassword(username: string, currentPassword: string, 
   }
 
   try {
-    const db = openDb();
+    await connectToDatabase();
 
     // Verify user and current password
-    const userStmt = db.prepare('SELECT password FROM users WHERE username = ?');
-    const user = userStmt.get(username) as { password: string } | undefined;
+    const user = await User.findOne({ username }).select('password').lean() as { password: string } | null;
 
     if (!user) {
       return { error: "User not found." };
@@ -101,8 +95,7 @@ export async function updatePassword(username: string, currentPassword: string, 
 
     // Hash the new password and update
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-    const updateStmt = db.prepare('UPDATE users SET password = ? WHERE username = ?');
-    updateStmt.run(hashedNewPassword, username);
+    await User.updateOne({ username }, { password: hashedNewPassword });
 
     return { success: true };
   } catch (error: unknown) {
@@ -117,11 +110,10 @@ export async function deleteAccount(username: string, currentPassword: string) {
   }
 
   try {
-    const db = openDb();
+    await connectToDatabase();
 
     // Verify user and password
-    const userStmt = db.prepare('SELECT password FROM users WHERE username = ?');
-    const user = userStmt.get(username) as { password: string } | undefined;
+    const user = await User.findOne({ username }).select('password').lean() as { password: string } | null;
 
     if (!user) {
       return { error: "User not found." };
@@ -133,8 +125,7 @@ export async function deleteAccount(username: string, currentPassword: string) {
     }
 
     // Delete user
-    const deleteStmt = db.prepare('DELETE FROM users WHERE username = ?');
-    deleteStmt.run(username);
+    await User.deleteOne({ username });
 
     return { success: true };
   } catch (error: unknown) {

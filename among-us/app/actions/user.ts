@@ -1,18 +1,20 @@
 "use server";
 
-import { openDb } from "@/lib/sqlite";
+import { connectToDatabase, User } from "@/lib/mongodb";
 
 export async function getUserProfile(username: string) {
   try {
-    const db = openDb();
-    const stmt = db.prepare('SELECT username, rank, points FROM users WHERE username = ?');
-    const user = stmt.get(username) as { username: string, rank: string, points: number } | undefined;
+    await connectToDatabase();
+    
+    // Mongoose query
+    const user = await User.findOne({ username }).select('username rank points createdAt -_id').lean();
     
     if (!user) {
       return { error: "User not found" };
     }
     
-    return { success: true, user };
+    // Convert lean document to plain JS object if needed, it should already be close.
+    return { success: true, user: user as { username: string, rank: string, points: number, createdAt: Date } };
   } catch (error: unknown) {
     console.error("Profile error:", error);
     return { error: "Failed to fetch user profile" };
@@ -21,11 +23,16 @@ export async function getUserProfile(username: string) {
 
 export async function getLeaderboard() {
   try {
-    const db = openDb();
-    const stmt = db.prepare('SELECT username, rank, points FROM users ORDER BY points DESC LIMIT 10');
-    const leaderboard = stmt.all() as { username: string, rank: string, points: number }[];
+    await connectToDatabase();
     
-    return { success: true, leaderboard };
+    // Sort by points descending, limit 10
+    const leaderboard = await User.find({})
+      .sort({ points: -1 })
+      .limit(10)
+      .select('username rank points -_id')
+      .lean();
+    
+    return { success: true, leaderboard: leaderboard as { username: string, rank: string, points: number }[] };
   } catch (error: unknown) {
     console.error("Leaderboard error:", error);
     return { error: "Failed to fetch leaderboard" };

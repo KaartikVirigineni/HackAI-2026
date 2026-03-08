@@ -4,8 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginAgent } from "@/app/actions/auth";
+import { useCyberAudio } from "@/app/hooks/useCyberAudio";
+
 export default function CyberLogin() {
   const router = useRouter();
+  const { playHover } = useCyberAudio();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authText, setAuthText] = useState("");
   const [accessGranted, setAccessGranted] = useState(false);
@@ -135,9 +138,6 @@ export default function CyberLogin() {
                 <label className="block text-xs font-orbitron tracking-widest text-cyber-blue/80 uppercase">
                   Passkey
                 </label>
-                <a href="#" className="text-xs text-cyber-blue/60 hover:text-cyber-blue transition-colors hover:text-glow-blue">
-                  Forgot Password?
-                </a>
               </div>
               <div className="relative group">
                 <input 
@@ -154,6 +154,7 @@ export default function CyberLogin() {
             {/* Login Button */}
             <button 
               type="submit"
+              onMouseEnter={playHover}
               className="w-full relative group bg-cyber-dark border border-cyber-blue text-cyber-blue font-orbitron font-bold tracking-widest uppercase py-4 rounded-lg overflow-hidden transition-all duration-300 hover:text-cyber-dark hover:bg-cyber-blue hover:box-glow-blue"
             >
               <div className="absolute inset-0 w-full h-full bg-cyber-blue translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out -z-10"></div>

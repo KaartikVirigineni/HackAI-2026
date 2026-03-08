@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import VoiceChat from "@/app/voiceChat";
+import { useCyberAudio } from "@/app/hooks/useCyberAudio";
 
 interface ContentBlock {
   id: number;
@@ -35,6 +36,12 @@ export default function LearnPage() {
   const [error, setError] = useState<string | null>(null);
   const [lessonData, setLessonData] = useState<LessonData | null>(null);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
+  const { fadeOutMusic, playHover } = useCyberAudio();
+
+  // Fade out music when Learn page opens
+  useEffect(() => {
+    fadeOutMusic();
+  }, [fadeOutMusic]);
 
   const fetchLesson = async () => {
     setLoading(true);
@@ -103,7 +110,7 @@ export default function LearnPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center gap-4 mb-12">
-          <Link href="/home" className="text-cyber-blue hover:text-glow-blue transition-all bg-cyber-darker border border-cyber-blue/30 rounded-lg p-2.5 filter flex items-center justify-center shadow-[0_0_15px_rgba(0,243,255,0.1)] hover:border-cyber-blue/60">
+          <Link href="/home" onMouseEnter={playHover} className="text-cyber-blue hover:text-glow-blue transition-all bg-cyber-darker border border-cyber-blue/30 rounded-lg p-2.5 filter flex items-center justify-center shadow-[0_0_15px_rgba(0,243,255,0.1)] hover:border-cyber-blue/60">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
           </Link>
           <h1 className="text-3xl md:text-4xl font-bold font-orbitron tracking-widest text-cyber-blue uppercase text-glow-blue">
@@ -139,6 +146,7 @@ export default function LearnPage() {
                 </h2>
                 <button 
                   onClick={fetchLesson}
+                  onMouseEnter={playHover}
                   className="bg-cyber-dark border border-cyber-green text-cyber-green px-5 py-2.5 rounded-lg font-orbitron text-sm font-bold uppercase tracking-wider hover:bg-cyber-green hover:text-cyber-dark hover:box-glow-green shadow-[0_0_15px_rgba(0,255,100,0.1)] transition-all duration-300 flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
@@ -232,6 +240,7 @@ export default function LearnPage() {
                                           <button
                                             key={opt.id}
                                             onClick={() => handleSelectOption(relatedQuestion.id, opt.id)}
+                                            onMouseEnter={playHover}
                                             disabled={isAnswered}
                                             className={`
                                               w-full text-left px-5 py-4 rounded-lg border transition-all duration-300 flex items-start gap-4
@@ -286,6 +295,7 @@ export default function LearnPage() {
                        <div className="pt-4">
                          <Link 
                            href="/trivia"
+                           onMouseEnter={playHover}
                            className="inline-flex items-center gap-3 px-8 py-4 bg-cyber-blue/10 border-2 border-cyber-blue text-cyber-blue font-orbitron font-bold tracking-widest uppercase rounded-lg hover:bg-cyber-blue hover:text-cyber-dark hover:box-glow-blue transition-all duration-300 group"
                          >
                            Initiate Trivia Protocol

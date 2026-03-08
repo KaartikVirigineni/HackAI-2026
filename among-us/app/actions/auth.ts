@@ -1,6 +1,6 @@
 "use server";
 
-import { openDb } from "@/lib/sqlite";
+import { connectToDatabase, User } from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
 
 export async function registerAgent(formData: FormData) {
@@ -18,11 +18,12 @@ export async function registerAgent(formData: FormData) {
   }
 
   try {
-    const db = openDb();
+    await connectToDatabase();
     
     // Check if user already exists
-    const stmt = db.prepare('SELECT username, email FROM users WHERE username = ? OR email = ?');
-    const existingUser = stmt.get(username, email) as { username: string; email: string } | undefined;
+    const existingUser = await User.findOne({ 
+      $or: [{ username }, { email }] 
+    });
     
     if (existingUser) {
       if (existingUser.username === username) {
@@ -37,9 +38,11 @@ export async function registerAgent(formData: FormData) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create the user
-    // better-sqlite3 uses sync queries
-    const insertStmt = db.prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
-    insertStmt.run(username, email, hashedPassword);
+    await User.create({
+      username,
+      email,
+      password: hashedPassword
+    });
 
     return { success: true };
   } catch (error: unknown) {
@@ -57,11 +60,10 @@ export async function loginAgent(formData: FormData) {
   }
 
   try {
-    const db = openDb();
+    await connectToDatabase();
 
     // Find the user
-    const stmt = db.prepare('SELECT username, password FROM users WHERE username = ?');
-    const user = stmt.get(username) as { username: string, password: string } | undefined;
+    const user = await User.findOne({ username }).lean() as { username: string, password: string } | null;
     
     if (!user) {
       return { error: "Invalid credentials." };

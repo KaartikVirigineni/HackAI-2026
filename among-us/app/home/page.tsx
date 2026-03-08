@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getUserProfile, getLeaderboard } from "@/app/actions/user";
+import { useCyberAudio } from "@/app/hooks/useCyberAudio";
 
 type UserProfile = {
   username: string;
@@ -12,6 +13,7 @@ type UserProfile = {
 
 export default function CyberHome() {
   const router = useRouter();
+  const { isPlaying, toggleMusic, playHover } = useCyberAudio();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [leaderboard, setLeaderboard] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,7 +94,11 @@ export default function CyberHome() {
           </div>
 
           {/* Right: User Profile Widget */}
-          <div className="w-full md:w-64 bg-cyber-darker/80 border border-cyber-blue/30 p-4 rounded-xl backdrop-blur-md shadow-[0_0_15px_rgba(0,243,255,0.05)] transform transition hover:scale-105 hover:border-cyber-blue/60 duration-300">
+          <div 
+            onClick={() => router.push('/profile')}
+            onMouseEnter={playHover}
+            className="w-full md:w-64 bg-cyber-darker/80 border border-cyber-blue/30 p-4 rounded-xl backdrop-blur-md shadow-[0_0_15px_rgba(0,243,255,0.05)] transform transition hover:scale-105 hover:border-cyber-blue/60 duration-300 cursor-pointer"
+          >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-cyber-blue/10 border border-cyber-blue/50 flex items-center justify-center text-cyber-blue font-bold text-lg shadow-[0_0_10px_rgba(0,243,255,0.2)]">
@@ -108,19 +114,25 @@ export default function CyberHome() {
                 </div>
               </div>
               
-              <div className="flex gap-2">
+              <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                 <button 
-                  onClick={() => router.push('/profile')}
-                  className="text-xs text-gray-400 hover:text-cyber-blue transition-colors bg-cyber-blue/10 p-1.5 rounded"
-                  title="Profile Settings"
+                  onClick={toggleMusic}
+                  onMouseEnter={playHover}
+                  className={`text-xs transition-colors p-1.5 rounded ${isPlaying ? 'text-cyber-green bg-cyber-green/10 hover:text-green-400' : 'text-gray-400 bg-gray-500/10 hover:text-gray-300'}`}
+                  title={isPlaying ? "Mute Music" : "Play Music"}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  {isPlaying ? (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg>
+                  )}
                 </button>
                 <button 
                   onClick={() => {
                     localStorage.removeItem("agentUsername");
                     router.push("/");
                   }}
+                  onMouseEnter={playHover}
                   className="text-xs text-gray-400 hover:text-red-400 transition-colors bg-red-500/10 p-1.5 rounded"
                   title="Disconnect"
                 >
@@ -149,6 +161,7 @@ export default function CyberHome() {
           
           {/* Action 1: Learn module */}
           <button 
+            onMouseEnter={playHover}
             onClick={() => router.push('/learn')}
             className="flex-1 max-w-md relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-blue p-8 sm:p-10 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(0,243,255,0.4)] duration-300"
           >
@@ -172,6 +185,7 @@ export default function CyberHome() {
 
           {/* Action 2: Chat Mentor */}
           <button 
+            onMouseEnter={playHover}
             onClick={() => router.push('/chat')}
             className="flex-1 max-w-md relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-green p-8 sm:p-10 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(0,255,157,0.4)] duration-300"
           >

@@ -3,11 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 import { registerAgent } from "@/app/actions/auth";
+import { useCyberAudio } from "@/app/hooks/useCyberAudio";
 
 export default function CyberRegister() {
   const router = useRouter();
+  const { playHover } = useCyberAudio();
   const [isRegistering, setIsRegistering] = useState(false);
   const [authText, setAuthText] = useState("");
   const [accessGranted, setAccessGranted] = useState(false);
@@ -186,6 +187,7 @@ export default function CyberRegister() {
             {/* Register Button */}
             <button 
               type="submit"
+              onMouseEnter={playHover}
               className="w-full relative group bg-cyber-dark border border-cyber-blue text-cyber-blue font-orbitron font-bold tracking-widest uppercase mt-4 py-3 sm:py-4 rounded-lg overflow-hidden transition-all duration-300 hover:text-cyber-dark hover:bg-cyber-blue hover:box-glow-blue"
             >
               <div className="absolute inset-0 w-full h-full bg-cyber-blue translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out -z-10"></div>

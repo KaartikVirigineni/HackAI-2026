@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useCyberAudio } from "@/app/hooks/useCyberAudio";
 
 // Define message types. "system" is for local UI notifications only and won't be sent to Gemini.
 interface ChatMessage {
@@ -12,6 +13,7 @@ interface ChatMessage {
 
 export default function ChatPage() {
   const router = useRouter();
+  const { playHover } = useCyberAudio();
   
   const [messages, setMessages] = useState<ChatMessage[]>([{
      role: "system",
@@ -123,7 +125,7 @@ export default function ChatPage() {
       {/* Header */}
       <header className="relative z-10 bg-cyber-darker/80 backdrop-blur-md border-b border-cyber-green/30 px-6 py-4 flex items-center justify-between shadow-[0_0_20px_rgba(0,255,157,0.05)]">
          <div className="flex items-center gap-4">
-            <Link href="/home" className="text-gray-400 hover:text-cyber-green transition-colors p-2 border border-gray-700 hover:border-cyber-green/50 rounded flex items-center justify-center">
+            <Link href="/home" onMouseEnter={playHover} className="text-gray-400 hover:text-cyber-green transition-colors p-2 border border-gray-700 hover:border-cyber-green/50 rounded flex items-center justify-center">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
             </Link>
             <div>
@@ -161,6 +163,7 @@ export default function ChatPage() {
             {!syllabusContext ? (
                <button 
                   onClick={() => fileInputRef.current?.click()}
+                  onMouseEnter={playHover}
                   className="w-full relative group overflow-hidden rounded-xl border-2 border-dashed border-cyber-green/30 bg-cyber-green/5 p-8 flex flex-col items-center justify-center gap-3 hover:border-cyber-green hover:bg-cyber-green/10 transition-all duration-300"
                >
                   <svg className="w-10 h-10 text-cyber-green/50 group-hover:text-cyber-green transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
@@ -188,6 +191,7 @@ export default function ChatPage() {
                            parts: [{ text: "[SYSTEM LOG]: Syllabus module unlinked. Returning to standard operational parameters." }]
                         }]);
                      }}
+                     onMouseEnter={playHover}
                      className="w-full py-2 bg-red-500/10 border-t border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/20 text-xs font-orbitron tracking-widest uppercase transition-colors"
                   >
                      Disconnect Module
@@ -286,6 +290,7 @@ export default function ChatPage() {
                   </div>
                   <button 
                      type="submit"
+                     onMouseEnter={playHover}
                      disabled={!input.trim() || isTyping}
                      className="shrink-0 w-14 h-14 rounded-xl bg-cyber-green/10 border border-cyber-green text-cyber-green flex items-center justify-center hover:bg-cyber-green hover:text-cyber-dark hover:shadow-[0_0_20px_rgba(0,255,157,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
                   >

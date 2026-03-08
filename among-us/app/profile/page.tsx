@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getUserProfile } from "@/app/actions/user";
 import { updateUsername, updateEmail, updatePassword, deleteAccount } from "@/app/actions/profile";
@@ -249,6 +250,18 @@ export default function ProfilePage() {
             <h3 className="text-red-400 font-orbitron font-bold text-lg mb-2 group-hover:text-red-300 transition-all">Terminiate Account</h3>
             <p className="text-sm text-gray-500">Permanently delete your profile and all associated data.</p>
           </button>
+        </div>
+
+        {/* Global Return Home Button */}
+        <div className="mt-16 flex justify-center pb-10">
+          <Link 
+            href="/home" 
+            onMouseEnter={playHover}
+            className="flex items-center gap-3 px-6 py-3 bg-cyber-darker border border-cyber-blue/40 text-cyber-blue font-orbitron text-xs font-bold tracking-[0.2em] uppercase rounded-xl hover:bg-cyber-blue hover:text-cyber-dark hover:box-glow-blue transition-all duration-300 group shadow-[0_0_20px_rgba(0,243,255,0.05)]"
+          >
+            <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+            Return to Arena
+          </Link>
         </div>
 
       </div>

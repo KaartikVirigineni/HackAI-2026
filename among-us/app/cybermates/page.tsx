@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { GameEngine } from '@/components/game/Engine';
 import { TaskManager } from '@/components/game/TaskManager';
 import { MissionDebrief } from '@/components/game/MissionDebrief';
+import { TouchControls } from '@/components/game/TouchControls';
 
 export default function PhishingPier() {
   const searchParams = useSearchParams();
@@ -643,13 +644,20 @@ export default function PhishingPier() {
           </div>
         )}
 
-        <canvas 
-          ref={canvasRef} 
-          width={1024} 
-          height={768} 
-          style={{ maskImage: powerCut ? 'radial-gradient(circle 120px at center, black 60%, transparent 100%)' : 'none', WebkitMaskImage: powerCut ? 'radial-gradient(circle 120px at center, black 60%, transparent 100%)' : 'none' }}
-          className={`border border-cyber-green bg-cyber-darker rounded-lg box-glow-green z-20 relative ${blurUI ? 'blur-sm' : ''} ${showGlitch ? 'animate-bounce' : ''}`}
-        />
+        <div className="relative inline-block">
+          <canvas 
+            ref={canvasRef} 
+            width={1024} 
+            height={768} 
+            style={{ maskImage: powerCut ? 'radial-gradient(circle 120px at center, black 60%, transparent 100%)' : 'none', WebkitMaskImage: powerCut ? 'radial-gradient(circle 120px at center, black 60%, transparent 100%)' : 'none' }}
+            className={`border border-cyber-green bg-cyber-darker rounded-lg box-glow-green z-20 relative ${blurUI ? 'blur-sm' : ''} ${showGlitch ? 'animate-bounce' : ''}`}
+          />
+          {/* Virtual joystick for touchscreen / mobile */}
+          <TouchControls
+            engineRef={engineRef}
+            isVisible={joined && gameStatus === 'playing' && !isTasking}
+          />
+        </div>
       </div>
 
       {isTasking && localPlayer && localPlayer.role && socket && (

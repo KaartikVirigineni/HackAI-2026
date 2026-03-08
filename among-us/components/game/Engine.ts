@@ -128,11 +128,20 @@ export class GameEngine {
     }
   }
 
+  touchDx: number = 0; // -1 to 1, set by virtual joystick
+  touchDy: number = 0;
+
+  /** Called by the TouchControls React component each frame */
+  setTouch(dx: number, dy: number) {
+    this.touchDx = dx;
+    this.touchDy = dy;
+  }
+
   update() {
     if (!this.localPlayerId || !this.players[this.localPlayerId]) return;
 
-    let dx = 0;
-    let dy = 0;
+    let dx = this.touchDx * this.speed;
+    let dy = this.touchDy * this.speed;
 
     if (this.keys['w'] || this.keys['arrowup']) dy -= this.speed;
     if (this.keys['s'] || this.keys['arrowdown']) dy += this.speed;

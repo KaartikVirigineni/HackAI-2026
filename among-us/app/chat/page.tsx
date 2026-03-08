@@ -21,7 +21,7 @@ export default function ChatPage() {
   }]);
   
   const [input, setInput] = useState("");
-  const [syllabusContext, setSyllabusContext] = useState<string | null>(null);
+  const [syllabusContext, setSyllabusContext] = useState<{data: string, mimeType: string} | null>(null);
   const [syllabusFileName, setSyllabusFileName] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,30 +38,48 @@ export default function ChatPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.name.endsWith('.txt') && !file.name.endsWith('.md')) {
-        setError("Invalid file type. Please upload a .txt or .md syllabus file.");
+    const acceptedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword', 'text/plain', 'text/markdown'];
+    
+    // Simplistic check, browser might report generic types, so check extensions too
+    if (!acceptedTypes.includes(file.type) && !file.name.match(/\.(pdf|docx?|txt|md)$/i)) {
+        setError("Invalid file type. Please upload a PDF, DOCX, TXT, or MD syllabus file.");
         return;
     }
 
     const reader = new FileReader();
     reader.onload = (event) => {
-       const text = event.target?.result as string;
-       if (text) {
-          setSyllabusContext(text);
-          setSyllabusFileName(file.name);
-          setError(null);
-          
-          // Add a system notification to the chat
-          setMessages(prev => [...prev, {
-             role: "system",
-             parts: [{ text: `[SYSTEM LOG]: Successfully parsed syllabus module: ${file.name}. My parameters have been optimized to act as your dedicated exam tutor.` }]
-          }]);
+       const result = event.target?.result as string;
+       if (result) {
+          const splitResult = result.split(",");
+          if (splitResult.length === 2) {
+            const base64Data = splitResult[1];
+            let mimeType = file.type;
+            if (!mimeType || mimeType === "") {
+              if (file.name.endsWith('.pdf')) mimeType = 'application/pdf';
+              else if (file.name.endsWith('.docx')) mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+              else if (file.name.endsWith('.doc')) mimeType = 'application/msword';
+              else if (file.name.endsWith('.md')) mimeType = 'text/markdown';
+              else mimeType = 'text/plain';
+            }
+            
+            setSyllabusContext({ data: base64Data, mimeType });
+            setSyllabusFileName(file.name);
+            setError(null);
+            
+            // Add a system notification to the chat
+            setMessages(prev => [...prev, {
+               role: "system",
+               parts: [{ text: `[SYSTEM LOG]: Successfully parsed syllabus module: ${file.name}. My parameters have been optimized to act as your dedicated exam tutor.` }]
+            }]);
+          } else {
+             setError("Failed to parse file data.");
+          }
        }
     };
     reader.onerror = () => {
        setError("Failed to read the file. It may be corrupted.");
     };
-    reader.readAsText(file);
+    reader.readAsDataURL(file);
   };
 
   const sendMessage = async (e: React.FormEvent) => {
@@ -149,12 +167,12 @@ export default function ChatPage() {
             </h2>
             
             <p className="text-xs text-gray-400 mb-6 font-inter">
-               Upload your cybersecurity course syllabus (.txt or .md) so Gemini can act as your personalized tutor to help you prepare for exams!
+               Upload your cybersecurity course syllabus (PDF, DOCX, TXT, MD) so Gemini can act as your personalized tutor to help you prepare for exams!
             </p>
 
             <input 
                type="file" 
-               accept=".txt,.md" 
+               accept=".txt,.md,.pdf,.doc,.docx" 
                className="hidden" 
                ref={fileInputRef}
                onChange={handleFileUpload}

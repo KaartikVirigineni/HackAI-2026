@@ -12,18 +12,25 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "No prompt provided." }, { status: 400 });
     }
 
-    const systemInstruction = syllabusContext 
-        ? `You are an expert cybersecurity tutor in the neon "CyberArena" system. 
-           Your primary directive is to help this agent prepare for their cybersecurity exams using the provided syllabus context. 
-           Be encouraging, extremely knowledgeable, and use a slight cyberpunk/hacker tone.
-           
-           === SYLLABUS CONTEXT PROVIDED BY AGENT ===
-           ${syllabusContext}
-           ==========================================
-           
-           Answer their questions drawing primarily on the topics listed in this syllabus.`
-        : `You are an expert cybersecurity tutor in the neon "CyberArena" system. 
-           Help the agent learn cybersecurity concepts. Be encouraging, highly knowledgeable, and use a slight cyberpunk/hacker tone.`;
+    const systemInstruction = `You are an expert cybersecurity tutor in the neon "CyberArena" system. 
+       Help the agent learn cybersecurity concepts. Be encouraging, highly knowledgeable, and use a slight cyberpunk/hacker tone.${
+       syllabusContext ? ` The user has provided their syllabus document. Answer their questions drawing primarily on the topics listed in it.` : ''
+    }`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let finalPrompt: any = prompt;
+
+    if (syllabusContext) {
+      const inlineDataPart = { inlineData: { data: syllabusContext.data, mimeType: syllabusContext.mimeType } };
+      if (history && history.length > 0) {
+        history[0].parts.unshift(inlineDataPart);
+        history[0].parts.unshift({ text: "Here is the syllabus document context for this session:\n" });
+      } else {
+        finalPrompt = [
+            inlineDataPart,
+            { text: "Use the above syllabus document for context.\n\n" + prompt }
+        ];
+      }
+    }
 
     const chat = ai.chats.create({
       model,
@@ -33,7 +40,7 @@ export async function POST(req: Request) {
       history: history || [],
     });
 
-    const result = await chat.sendMessage({ message: prompt });
+    const result = await chat.sendMessage({ message: finalPrompt });
     const text = result.text;
 
     return NextResponse.json({ text });

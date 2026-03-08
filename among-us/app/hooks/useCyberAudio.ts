@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 // Global singletons so music persists across page transitions
 let globalAudioCtx: AudioContext | null = null;
@@ -10,6 +10,7 @@ const subscribers = new Set<(playing: boolean) => void>();
 
 export function useCyberAudio() {
   const [isPlaying, setIsPlaying] = useState(globalIsPlaying);
+  const walkAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const handler = (playing: boolean) => setIsPlaying(playing);
@@ -123,10 +124,67 @@ export function useCyberAudio() {
 
   }, [initAudio]);
 
+  const playWalk = useCallback(() => {
+    if (!walkAudioRef.current) {
+      walkAudioRef.current = new Audio("/sounds/walk.mp3");
+      walkAudioRef.current.loop = true;
+      walkAudioRef.current.volume = 0.5;
+    }
+    
+    // Play only if it isn't playing already
+    if (walkAudioRef.current.paused) {
+      walkAudioRef.current.play().catch(e => {
+         if (e.name !== 'AbortError') console.error("Walk audio play failed:", e);
+      });
+    }
+  }, []);
+
+  const stopWalk = useCallback(() => {
+    if (walkAudioRef.current && !walkAudioRef.current.paused) {
+      walkAudioRef.current.pause();
+    }
+  }, []);
+
+  const playTaskComplete = useCallback(() => {
+    const audio = new Audio("/sounds/task_complete.mp3");
+    audio.play().catch(e => {
+        if (e.name !== 'AbortError') console.error("Task complete audio play failed:", e);
+    });
+  }, []);
+
+  const playSabotage = useCallback(() => {
+    const audio = new Audio("/sounds/sabotage.mp3");
+    audio.play().catch(e => {
+        if (e.name !== 'AbortError') console.error("Sabotage audio play failed:", e);
+    });
+  }, []);
+
+  const playWin = useCallback(() => {
+    const audio = new Audio("/sounds/win.mp3");
+    audio.play().catch(e => {
+        if (e.name !== 'AbortError') console.error("Win audio play failed:", e);
+    });
+  }, []);
+
+  const playLose = useCallback(() => {
+    const audio = new Audio("/sounds/lose.mp3");
+    audio.play().catch(e => {
+        if (e.name !== 'AbortError') console.error("Lose audio play failed:", e);
+    });
+  }, []);
+
   return {
     isPlaying,
     toggleMusic,
+    startBgMusic,
     playHover,
-    fadeOutMusic
+    fadeOutMusic,
+    playWalk,
+    stopWalk,
+    playTaskComplete,
+    playSabotage,
+    playWin,
+    playLose
   };
 }
+

@@ -14,6 +14,8 @@ export class GameEngine {
   keys: { [key: string]: boolean };
   animationFrameId: number | null;
   localPlayerId: string | null;
+  playWalk?: () => void;
+  stopWalk?: () => void;
   speed: number = 8;
   lastSendTime: number = 0; // Throttle: last time we sent move event
   sendInterval: number = 50; // Send at most 20 times/sec (50ms)
@@ -26,7 +28,7 @@ export class GameEngine {
   } | null = null;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(canvas: HTMLCanvasElement, socket: any) {
+  constructor(canvas: HTMLCanvasElement, socket: any, audioCallbacks?: { playWalk: () => void, stopWalk: () => void }) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d')!;
     this.socket = socket;
@@ -37,6 +39,8 @@ export class GameEngine {
     this.animationFrameId = null;
     this.localPlayerId = socket ? socket.id || null : null;
     this.renderer = new Renderer(this.ctx, canvas.width, canvas.height);
+    this.playWalk = audioCallbacks?.playWalk;
+    this.stopWalk = audioCallbacks?.stopWalk;
 
     if (this.socket) {
       this.socket.on('connect', () => {
@@ -147,6 +151,7 @@ export class GameEngine {
     }
 
     if (dx !== 0 || dy !== 0) {
+      if (this.playWalk) this.playWalk();
       const localP = this.players[this.localPlayerId];
       const pSize = 15;
 
@@ -191,6 +196,8 @@ export class GameEngine {
         this.socket.emit('move', { x: localP.x, y: localP.y });
         this.lastSendTime = now;
       }
+    } else {
+      if (this.stopWalk) this.stopWalk();
     }
 
     // Always interpolate remote players every frame

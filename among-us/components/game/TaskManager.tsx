@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCyberAudio } from '@/app/hooks/useCyberAudio';
 
 import { 
   ForensicLogAnalysis, 
@@ -72,17 +73,21 @@ export const TaskManager: React.FC<TaskManagerProps> = ({ role, socket, activeEf
   const [activeTaskKey, setActiveTaskKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const { playTaskComplete, playSabotage } = useCyberAudio();
+
   const showError = (msg: string) => {
     setError(msg);
     setTimeout(() => setError(null), 3000);
   };
 
   const completeTask = (taskKey: string) => {
+    playTaskComplete();
     socket.emit('task_complete', taskKey);
     onClose();
   };
 
   const triggerSabotage = (type: string) => {
+    playSabotage();
     socket.emit('execute_sabotage', type);
     onClose();
   };

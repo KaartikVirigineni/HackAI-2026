@@ -17,7 +17,7 @@ export default function CyberHome() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [leaderboard, setLeaderboard] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Game entry state
   const [teamCode, setTeamCode] = useState('');
 
@@ -67,7 +67,7 @@ export default function CyberHome() {
     <div className="relative min-h-screen bg-cyber-dark text-gray-200 font-inter overflow-x-hidden selection:bg-cyber-blue selection:text-cyber-dark">
       {/* Background Decor */}
       <div className="fixed inset-0 z-0 opacity-10 pointer-events-none">
-        <div 
+        <div
           className="absolute inset-0"
           style={{
             backgroundImage: `linear-gradient(rgba(0, 243, 255, 0.2) 1px, transparent 1px),
@@ -81,10 +81,10 @@ export default function CyberHome() {
 
       {/* Main Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        
+
         {/* Top Navbar */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
-          
+
           {/* Empty div for flex spacing on desktop safely */}
           <div className="hidden md:block w-64"></div>
 
@@ -97,7 +97,7 @@ export default function CyberHome() {
           </div>
 
           {/* Right: User Profile Widget */}
-          <div 
+          <div
             onClick={() => router.push('/profile')}
             onMouseEnter={playHover}
             className="w-full md:w-64 bg-cyber-darker/80 border border-cyber-blue/30 p-4 rounded-xl backdrop-blur-md shadow-[0_0_15px_rgba(0,243,255,0.05)] transform transition hover:scale-105 hover:border-cyber-blue/60 duration-300 cursor-pointer"
@@ -116,9 +116,9 @@ export default function CyberHome() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                <button 
+                <button
                   onClick={toggleMusic}
                   onMouseEnter={playHover}
                   className={`text-xs transition-colors p-1.5 rounded ${isPlaying ? 'text-cyber-green bg-cyber-green/10 hover:text-green-400' : 'text-gray-400 bg-gray-500/10 hover:text-gray-300'}`}
@@ -130,7 +130,7 @@ export default function CyberHome() {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg>
                   )}
                 </button>
-                <button 
+                <button
                   onClick={() => {
                     localStorage.removeItem("agentUsername");
                     router.push("/");
@@ -143,7 +143,7 @@ export default function CyberHome() {
                 </button>
               </div>
             </div>
-            
+
             <div className="mt-3 pt-3 border-t border-cyber-blue/20">
               <p className="text-xs text-gray-400 uppercase tracking-widest font-orbitron mb-1">
                 Total Credits
@@ -161,11 +161,11 @@ export default function CyberHome() {
         {/* Middle Section: Actions */}
         <div className="flex flex-col lg:flex-row justify-center gap-6 mb-20 relative px-4 text-center">
           <div className="absolute inset-0 bg-cyber-blue rounded-full filter blur-[150px] opacity-10 animate-pulse w-full max-w-2xl h-64 mx-auto top-1/2 -translate-y-1/2"></div>
-          
+
           {/* Action 1: Play Phishing Pier */}
           <div className="flex-1 max-w-sm mx-auto w-full relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-red p-6 sm:p-8 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(255,0,60,0.4)] duration-300 flex flex-col items-center justify-between">
             <div className="absolute inset-0 bg-linear-to-br from-cyber-red/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-            
+
             <div className="relative z-10 flex flex-col items-center gap-4 w-full">
               <div className="w-16 h-16 rounded-full bg-cyber-red/10 border border-cyber-red flex items-center justify-center text-cyber-red mb-2 group-hover:bg-cyber-red group-hover:text-cyber-dark transition-colors duration-300 shadow-[0_0_15px_rgba(255,0,60,0.2)]">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -176,22 +176,22 @@ export default function CyberHome() {
               <p className="text-sm text-gray-400 mb-4 h-10">
                 Enter Phishing Pier. Join by code or create a lobby.
               </p>
-              
+
               <div className="w-full flex flex-col gap-3 relative z-20">
                 <div className="flex gap-2 w-full">
-                  <input 
-                    type="text" 
-                    placeholder="CODE" 
+                  <input
+                    type="text"
+                    placeholder="CODE"
                     maxLength={6}
                     value={teamCode}
                     onChange={(e) => setTeamCode(e.target.value.toUpperCase())}
                     className="flex-1 min-w-0 bg-cyber-dark/80 border border-cyber-red/50 text-cyber-red px-3 py-2 rounded focus:outline-none focus:border-cyber-red focus:shadow-[0_0_10px_rgba(255,0,60,0.2)] font-mono tracking-widest text-center"
                   />
-                  <button 
+                  <button
                     onClick={() => {
-                       if (teamCode.trim().length > 0) {
-                         router.push(`/cybermates?join=${teamCode.trim()}`);
-                       }
+                      if (teamCode.trim().length > 0) {
+                        router.push(`/cybermates?join=${teamCode.trim()}`);
+                      }
                     }}
                     onMouseEnter={playHover}
                     disabled={!teamCode.trim()}
@@ -200,14 +200,14 @@ export default function CyberHome() {
                     JOIN
                   </button>
                 </div>
-                
+
                 <div className="flex items-center">
                   <hr className="flex-1 border-gray-700" />
                   <span className="px-3 text-[10px] text-gray-500 font-bold uppercase">or</span>
                   <hr className="flex-1 border-gray-700" />
                 </div>
-                
-                <button 
+
+                <button
                   onClick={() => router.push(`/cybermates?create=true`)}
                   onMouseEnter={playHover}
                   className="w-full bg-cyber-red/10 text-white border border-cyber-red hover:bg-cyber-red hover:text-white hover:shadow-[0_0_15px_rgba(255,0,60,0.5)] py-2 rounded font-bold font-orbitron tracking-widest text-sm transition-all"
@@ -220,15 +220,15 @@ export default function CyberHome() {
             <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyber-red opacity-50 group-hover:opacity-100 transition-opacity m-2 pointer-events-none"></div>
             <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyber-red opacity-50 group-hover:opacity-100 transition-opacity m-2 pointer-events-none"></div>
           </div>
-          
+
           {/* Action 2: Learn module */}
-          <div 
+          <div
             onMouseEnter={playHover}
             onClick={() => router.push('/learn')}
             className="flex-1 max-w-sm mx-auto w-full relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-blue p-6 sm:p-8 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(0,243,255,0.4)] duration-300 cursor-pointer flex flex-col items-center"
           >
             <div className="absolute inset-0 bg-linear-to-br from-cyber-blue/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-            
+
             <div className="relative z-10 flex flex-col items-center gap-4 text-center mt-2">
               <div className="w-16 h-16 rounded-full bg-cyber-blue/10 border border-cyber-blue flex items-center justify-center text-cyber-blue mb-2 group-hover:bg-cyber-blue group-hover:text-cyber-dark transition-colors duration-300 shadow-[0_0_15px_rgba(0,243,255,0.2)]">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
@@ -246,13 +246,13 @@ export default function CyberHome() {
           </div>
 
           {/* Action 3: Chat Mentor */}
-          <div 
+          <div
             onMouseEnter={playHover}
             onClick={() => router.push('/chat')}
             className="flex-1 max-w-sm mx-auto w-full relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-green p-6 sm:p-8 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(0,255,157,0.4)] duration-300 cursor-pointer flex flex-col items-center"
           >
             <div className="absolute inset-0 bg-linear-to-bl from-cyber-green/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-            
+
             <div className="relative z-10 flex flex-col items-center gap-4 text-center mt-2">
               <div className="w-16 h-16 rounded-full bg-cyber-green/10 border border-cyber-green flex items-center justify-center text-cyber-green mb-2 group-hover:bg-cyber-green group-hover:text-cyber-dark transition-colors duration-300 shadow-[0_0_15px_rgba(0,255,157,0.2)]">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
@@ -261,7 +261,7 @@ export default function CyberHome() {
                 AI Mentor
               </h2>
               <p className="text-sm text-gray-400">
-                Upload your cybersecurity course syllabus and let Gemini prepare you for exams!
+                Upload your cybersecurity course syllabus and allow me to prepare you for exams!
               </p>
             </div>
             {/* Animated corner borders */}
@@ -281,7 +281,7 @@ export default function CyberHome() {
             </h2>
             <div className="h-px flex-1 bg-linear-to-l from-transparent to-cyber-blue/50"></div>
           </div>
-          
+
           <div className="bg-cyber-darker/60 backdrop-blur-sm border border-cyber-blue/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(0,243,255,0.05)]">
             <div className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-cyber-blue/20 bg-cyber-blue/5 text-xs font-orbitron tracking-widest uppercase text-gray-400">
               <div className="col-span-2 text-center">Rank</div>
@@ -289,25 +289,24 @@ export default function CyberHome() {
               <div className="col-span-3">Class</div>
               <div className="col-span-2 text-right">Score</div>
             </div>
-            
+
             <div className="max-h-[400px] overflow-y-auto cyber-scrollbar">
               {leaderboard.length > 0 ? (
                 leaderboard.map((player, index) => (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className={`grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-cyber-blue/10 transition-colors hover:bg-cyber-blue/5 ${player.username === user?.username ? 'bg-cyber-blue/10 border-l-4 border-l-cyber-blue' : ''}`}
                   >
                     <div className="col-span-2 flex justify-center">
-                      <span className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold font-mono text-sm ${
-                        index === 0 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 box-glow-yellow' : 
-                        index === 1 ? 'bg-gray-400/20 text-gray-300 border border-gray-400/50' : 
-                        index === 2 ? 'bg-amber-700/20 text-amber-600 border border-amber-700/50' : 
-                        'text-cyber-blue/70 bg-cyber-dark'
-                      }`}>
+                      <span className={`w-8 h-8 flex items-center justify-center rounded-lg font-bold font-mono text-sm ${index === 0 ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 box-glow-yellow' :
+                          index === 1 ? 'bg-gray-400/20 text-gray-300 border border-gray-400/50' :
+                            index === 2 ? 'bg-amber-700/20 text-amber-600 border border-amber-700/50' :
+                              'text-cyber-blue/70 bg-cyber-dark'
+                        }`}>
                         #{index + 1}
                       </span>
                     </div>
-                    
+
                     <div className="col-span-5 flex items-center gap-3">
                       <p className={`font-semibold font-inter max-w-[150px] truncate ${player.username === user?.username ? 'text-white' : 'text-gray-300'}`}>
                         {player.username}
@@ -318,13 +317,13 @@ export default function CyberHome() {
                         </span>
                       )}
                     </div>
-                    
+
                     <div className="col-span-3">
                       <span className="text-xs text-cyber-blue opacity-80 uppercase tracking-wider font-semibold">
                         {player.rank || 'Recruit'}
                       </span>
                     </div>
-                    
+
                     <div className="col-span-2 text-right">
                       <span className="font-mono text-cyber-green font-bold text-sm sm:text-base">
                         {player.points?.toLocaleString() || '0'}

@@ -86,8 +86,8 @@ app.prepare().then(() => {
 
       const teamRoles = Object.values(ROLES).filter((r: any) => r.team === assignedTeam);
       const randomRole = teamRoles[Math.floor(Math.random() * teamRoles.length)];
-      const roleKey = Object.keys(ROLES).find(k => ROLES[k] === randomRole);
-      const role = { name: roleKey, team: assignedTeam };
+      const roleKey = Object.keys(ROLES).find(k => ROLES[k] === randomRole)!;
+      const role = { name: roleKey, team: assignedTeam as Team };
 
       const success = game.addPlayer(socket.id, role, username);
       if (!success) {

@@ -405,11 +405,11 @@ export default function PhishingPier() {
   })();
 
   return (
-    <div className={`relative w-screen h-screen bg-cyber-dark text-cyber-green font-orbitron overflow-hidden flex flex-col items-center justify-center ${showGlitch ? 'animate-glitch opacity-90' : ''}`}>
+    <div className={`relative w-full ${gameStatus === 'playing' ? 'h-screen overflow-hidden' : 'min-h-screen'} bg-cyber-dark text-cyber-green font-orbitron flex flex-col items-center justify-center ${showGlitch ? 'animate-glitch opacity-90' : ''}`}>
       
       {!joined && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="bg-cyber-darker border-2 border-cyber-green p-8 rounded-lg box-glow-green text-center w-full max-w-md">
+        <div className="relative z-50 flex flex-col items-center justify-center min-h-screen w-full bg-black/80 backdrop-blur-sm p-4 py-12 overflow-y-auto">
+           <div className="bg-cyber-darker border-2 border-cyber-green p-6 md:p-8 rounded-lg box-glow-green text-center w-full max-w-md my-auto">
             <h1 className="text-3xl font-bold mb-6 text-cyber-green text-glow-green">PHISHING PIER</h1>
             <p className="mb-4 text-gray-300">Create a new secure operation or join an existing bridge call.</p>
             
@@ -480,7 +480,7 @@ export default function PhishingPier() {
 
       {/* Pre-Game Lobby Overlay */}
       {joined && gameStatus === 'lobby' && (
-        <div className="absolute inset-0 z-40 bg-black/90 flex flex-col items-center justify-center p-8 backdrop-blur-sm">
+        <div className="relative z-40 bg-black/90 flex flex-col items-center justify-start min-h-screen w-full p-4 pt-16 md:p-8 md:justify-center backdrop-blur-sm overflow-y-auto">
            <button 
              onClick={() => window.location.href = '/home'}
              className="absolute top-8 left-8 text-cyber-blue/60 hover:text-cyber-blue text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
@@ -493,12 +493,12 @@ export default function PhishingPier() {
            
            <div className="flex flex-col md:flex-row gap-4 md:gap-8 w-full max-w-7xl h-auto md:h-[40rem]">
               {/* Mission Debrief Section */}
-              <div className="flex-[2] bg-cyber-darker border border-cyber-blue rounded p-6 overflow-y-auto box-glow-blue thin-scrollbar">
+              <div className="flex-[2] bg-cyber-darker border border-cyber-blue rounded p-6 overflow-y-auto box-glow-blue thin-scrollbar min-h-[50vh] md:min-h-0">
                  <MissionDebrief />
               </div>
 
               {/* Connected Players List */}
-              <div className="flex-1 bg-cyber-darker border border-cyber-green rounded p-6 overflow-y-auto box-glow-green flex flex-col">
+              <div className="flex-1 bg-cyber-darker border border-cyber-green rounded p-6 overflow-y-auto box-glow-green flex flex-col min-h-[40vh] md:min-h-0">
                   <h2 className="text-xl md:text-2xl text-cyber-green mb-4 md:mb-6 font-bold border-b border-green-800 pb-2">Agents Connected ({Object.keys(players).length}/8)</h2>
                  <div className="grid grid-cols-1 gap-3 md:gap-4 flex-1 content-start">
                     {Object.entries(players).map(([id, p]) => (

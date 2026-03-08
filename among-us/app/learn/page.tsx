@@ -35,6 +35,7 @@ export default function LearnPage() {
   const [error, setError] = useState<string | null>(null);
   const [lessonData, setLessonData] = useState<LessonData | null>(null);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
+  const [agentUsername, setAgentUsername] = useState<string | undefined>(undefined);
 
   const fetchLesson = async () => {
     setLoading(true);
@@ -62,6 +63,8 @@ export default function LearnPage() {
 
   useEffect(() => {
     fetchLesson();
+    const storedUsername = localStorage.getItem("agentUsername");
+    setAgentUsername(storedUsername || "");
   }, []);
 
   const handleSelectOption = (questionId: number, optionId: string) => {
@@ -121,8 +124,12 @@ export default function LearnPage() {
               </h2>
               <p className="text-sm text-gray-400 mb-6">Coordinate with other agents to solve cyber problems together.</p>
               
-              <div className="border border-cyber-blue/20 rounded-xl p-1 bg-cyber-dark/50">
-                <VoiceChat roomName="training-room" />
+              <div className="border border-cyber-blue/20 rounded-xl p-1 bg-cyber-dark/50 min-h-[50px] flex items-center justify-center">
+                {agentUsername !== undefined ? (
+                  <VoiceChat roomName="training-room" username={agentUsername || undefined} />
+                ) : (
+                  <span className="text-cyber-blue text-sm animate-pulse">Initializing comms...</span>
+                )}
               </div>
             </div>
           </div>

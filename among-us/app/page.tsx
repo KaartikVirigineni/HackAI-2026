@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginAgent } from "@/app/actions/auth";
@@ -13,6 +13,31 @@ export default function CyberLogin() {
   const [authText, setAuthText] = useState("");
   const [accessGranted, setAccessGranted] = useState(false);
   const [error, setError] = useState("");
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +88,18 @@ export default function CyberLogin() {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyber-blue rounded-full mix-blend-screen filter blur-[128px] opacity-20 animate-pulse-slow"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyber-green rounded-full mix-blend-screen filter blur-[128px] opacity-10 animate-float"></div>
       </div>
+
+      {!isFullscreen && (
+        <button 
+          onClick={toggleFullscreen}
+          className="absolute top-4 right-4 z-50 p-2 bg-cyber-dark/80 border border-cyber-blue text-cyber-blue rounded hover:bg-cyber-blue hover:text-cyber-dark hover:box-glow-blue transition-all duration-300 flex items-center gap-2 group"
+        >
+          <span className="text-xs font-orbitron font-bold tracking-widest hidden sm:block">FULLSCREEN</span>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
+        </button>
+      )}
 
       {/* Main Login Panel */}
       <main className="relative z-10 w-full max-w-md p-8 sm:p-10 mx-4 border border-cyber-blue-dim bg-cyber-darker/80 backdrop-blur-xl rounded-2xl shadow-[0_0_50px_rgba(0,243,255,0.05)] before:absolute before:inset-0 before:rounded-2xl before:border before:border-cyber-blue/20 before:pointer-events-none">

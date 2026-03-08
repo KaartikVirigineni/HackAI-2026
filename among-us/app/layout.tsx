@@ -17,6 +17,15 @@ export const metadata: Metadata = {
   description: "Master Cybersecurity Through Play",
 };
 
+export const viewport = {
+  themeColor: "#050B14",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

@@ -3,10 +3,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 // @ts-expect-error - Socket.io exports are bugged in this Next.js TS config.
 import { io } from 'socket.io-client';
+import { useSearchParams } from 'next/navigation';
 import { GameEngine } from '@/components/game/Engine';
 import { TaskManager } from '@/components/game/TaskManager';
 
 export default function PhishingPier() {
+  const searchParams = useSearchParams();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [controlPercent, setControlPercent] = useState(50);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -175,11 +177,23 @@ export default function PhishingPier() {
       engineRef.current.start();
     }
 
+    // Auto-join or auto-create based on URL params
+    const createParam = searchParams.get('create');
+    const joinParam = searchParams.get('join');
+    
+    if (createParam === 'true') {
+      newSocket.emit('create_game', { username });
+    } else if (joinParam) {
+      setTeamCode(joinParam);
+      newSocket.emit('join_game', { username, teamCode: joinParam });
+    }
+
     return () => {
       engineRef.current?.stop();
       newSocket.disconnect();
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // Check if player is near a body
   const localPlayer = socket ? players[socket.id] : null;

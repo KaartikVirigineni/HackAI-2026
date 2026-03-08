@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { updateUserPoints } from "@/app/actions/user";
 
 interface MCQOption {
   id: string;
@@ -40,6 +41,9 @@ export default function TriviaPage() {
      pointsEarned: number;
      explanation: string;
   }[]>([]);
+  const [agentUsername, setAgentUsername] = useState<string | null>(null);
+  const [syncStatus, setSyncStatus] = useState<'pending' | 'syncing' | 'synced' | 'failed'>('pending');
+  const [newRank, setNewRank] = useState<string | null>(null);
 
   // Timer logic
   useEffect(() => {
@@ -78,7 +82,37 @@ export default function TriviaPage() {
       }
     };
     fetchTrivia();
+
+    // Check auth
+    const storedUsername = localStorage.getItem("agentUsername");
+    if (storedUsername) {
+       setAgentUsername(storedUsername);
+    }
   }, []);
+
+  // Sync points when game finishes
+  useEffect(() => {
+    if (gameState === 'finished' && agentUsername && score > 0 && syncStatus === 'pending') {
+      const syncPoints = async () => {
+        setSyncStatus('syncing');
+        try {
+          const res = await updateUserPoints(agentUsername, score);
+          if (res.success) {
+            setSyncStatus('synced');
+            if (res.newRank) setNewRank(res.newRank);
+          } else {
+            setSyncStatus('failed');
+          }
+        } catch (err) {
+          console.error("Failed to sync points:", err);
+          setSyncStatus('failed');
+        }
+      };
+      syncPoints();
+    } else if (gameState === 'finished' && score === 0) {
+       setSyncStatus('synced'); // Nothing to sync
+    }
+  }, [gameState, agentUsername, score, syncStatus]);
 
   const handleTimeOut = useCallback(() => {
      handleAnswerSubmission("TIMEOUT");
@@ -195,7 +229,31 @@ export default function TriviaPage() {
                  <div className={`text-5xl sm:text-6xl font-bold font-inter ${accuracy === 100 ? 'text-cyber-blue text-glow-blue' : accuracy >= 60 ? 'text-cyber-green text-glow-green' : 'text-red-500'}`}>
                     {accuracy}%
                  </div>
-                 <div className="text-xs text-gray-500 font-mono pt-2">{answerResults.filter(r => r.correct).length} / {questions.length} CORRECT</div>
+                  <div className="text-xs text-gray-500 font-mono pt-2">{answerResults.filter(r => r.correct).length} / {questions.length} CORRECT</div>
+              </div>
+           </div>
+
+           {/* Sync Status Overlay / Indicator */}
+           <div className="flex justify-center">
+              <div className={`px-4 py-2 rounded-full border text-xs font-orbitron tracking-widest uppercase flex items-center gap-2 ${
+                syncStatus === 'synced' ? 'bg-cyber-green/10 border-cyber-green text-cyber-green' :
+                syncStatus === 'syncing' ? 'bg-cyber-blue/10 border-cyber-blue text-cyber-blue animate-pulse' :
+                syncStatus === 'failed' ? 'bg-red-500/10 border-red-500 text-red-500' :
+                'bg-gray-800 border-gray-700 text-gray-500'
+              }`}>
+                <div className={`w-2 h-2 rounded-full ${
+                  syncStatus === 'synced' ? 'bg-cyber-green box-glow-green' :
+                  syncStatus === 'syncing' ? 'bg-cyber-blue' :
+                  syncStatus === 'failed' ? 'bg-red-500' :
+                  'bg-gray-600'
+                }`}></div>
+                {syncStatus === 'synced' ? 'Points Securely Uplinked' :
+                 syncStatus === 'syncing' ? 'Syncing with Databank...' :
+                 syncStatus === 'failed' ? 'Uplink Failed' :
+                 'Awaiting Sync...'}
+                {newRank && syncStatus === 'synced' && (
+                  <span className="ml-2 border-l border-cyber-green/30 pl-2">RANK UP: {newRank}</span>
+                )}
               </div>
            </div>
 

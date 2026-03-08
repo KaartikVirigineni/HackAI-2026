@@ -2,8 +2,8 @@ import { createServer } from 'http';
 import { parse } from 'url';
 import next from 'next';
 import { Server } from 'socket.io';
-import { GameState, mapConfig, ROLES } from './lib/game-server/game';
-import { openDb } from './lib/game-server/db';
+import { GameState, mapConfig, ROLES, Team } from './app/lib/game-server/game';
+import { openDb } from './app/lib/game-server/db';
 import bcrypt from 'bcryptjs';
 
 const dev = process.env.NODE_ENV !== 'production';
@@ -52,10 +52,10 @@ app.prepare().then(() => {
       socket.join(roomId);
       
       // Assign role
-      const teamRoles = Object.values(ROLES).filter((r: any) => r.team === 'red');
+      const teamRoles = Object.values(ROLES).filter((r) => r.team === 'red');
       const randomRole = teamRoles[Math.floor(Math.random() * teamRoles.length)];
-      const roleKey = Object.keys(ROLES).find(k => ROLES[k] === randomRole);
-      const role = { name: roleKey, team: 'red' };
+      const roleKey = Object.keys(ROLES).find(k => ROLES[k] === randomRole)!;
+      const role = { name: roleKey, team: 'red' as const };
 
       game.addPlayer(socket.id, role, username);
       
@@ -81,11 +81,11 @@ app.prepare().then(() => {
 
       const redCount = Object.values(game.players).filter(p => p.team === 'red').length;
       const blueCount = Object.values(game.players).filter(p => p.team === 'blue').length;
-      const assignedTeam = blueCount <= redCount ? 'blue' : 'red';
+      const assignedTeam: Team = blueCount <= redCount ? 'blue' : 'red';
 
-      const teamRoles = Object.values(ROLES).filter((r: any) => r.team === assignedTeam);
+      const teamRoles = Object.values(ROLES).filter((r) => r.team === assignedTeam);
       const randomRole = teamRoles[Math.floor(Math.random() * teamRoles.length)];
-      const roleKey = Object.keys(ROLES).find(k => ROLES[k] === randomRole);
+      const roleKey = Object.keys(ROLES).find(k => ROLES[k] === randomRole)!;
       const role = { name: roleKey, team: assignedTeam };
 
       const success = game.addPlayer(socket.id, role, username);

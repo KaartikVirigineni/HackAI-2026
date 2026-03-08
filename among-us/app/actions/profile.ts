@@ -1,6 +1,6 @@
 "use server";
 
-import { connectToDatabase, User } from "@/lib/mongodb";
+import { connectToDatabase, User } from "@/app/lib/mongodb";
 import bcrypt from "bcryptjs";
 
 export async function updateUsername(oldUsername: string, newUsername: string) {

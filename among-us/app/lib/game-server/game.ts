@@ -1,6 +1,22 @@
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 
-export const ROLES: Record<string, any> = {
+export interface RoleTask {
+  name: string;
+  controlChange: number;
+  effect?: string;
+  duration?: number;
+  counter?: string;
+}
+
+export type Team = 'red' | 'blue';
+
+export interface Role {
+  team: Team;
+  A: RoleTask;
+  B: RoleTask;
+}
+
+export const ROLES: Record<string, Role> = {
   // RED TEAM
   'The Author': {
     team: 'red',
@@ -82,23 +98,39 @@ export const mapConfig = {
 
 const PLAYER_COLORS = ['#ec4899', '#84cc16', '#06b6d4', '#8b5cf6', '#eab308', '#f97316', '#f8fafc', '#dc2626'];
 
+export interface PlayerTask {
+  x: number;
+  y: number;
+  color: string;
+  isComplete: boolean;
+}
+
 interface Player {
   x: number;
   y: number;
   name: string;
   role: string;
-  team: string;
+  team: Team;
   color: string;
   isGhost: boolean;
   abilityCooldown: number;
-  tasks: any;
+  tasks: {
+    A: PlayerTask;
+    B: PlayerTask;
+  };
+}
+
+export interface TaskHistoryEntry {
+  role: string;
+  taskKey: 'A' | 'B';
+  time: number;
 }
 
 export class GameState {
   io: Server;
   roomId: string;
   players: Record<string, Player>;
-  bodies: any[];
+  bodies: { x: number; y: number; color: string }[];
   controlPercentage: number;
   activeEffects: Record<string, boolean>;
   meeting: {
@@ -114,7 +146,7 @@ export class GameState {
   };
   gameStatus: 'lobby' | 'playing';
   hostId: string | null;
-  taskHistory: any[];
+  taskHistory: TaskHistoryEntry[];
   gameTimerId: NodeJS.Timeout | null;
   gameDurationLimit: number;
 
@@ -218,7 +250,7 @@ export class GameState {
     return false;
   }
 
-  calculateElo(winner: string) {
+  calculateElo(winner: Team) {
     const eloGained = 20;
     const bonusStr = '';
 
@@ -299,7 +331,7 @@ export class GameState {
     }
   }
 
-  addPlayer(socketId: string, role: any, name = 'Agent') {
+  addPlayer(socketId: string, role: { name: string; team: Team }, name = 'Agent') {
     if (Object.keys(this.players).length >= 8) {
       return false;
     }
@@ -495,7 +527,7 @@ export class GameState {
 
     // Tally
     const tallies: Record<string, number> = {};
-    const voteResults: Record<string, any[]>  = {}; // { 'targetId': ['voterId1', 'voterId2'] }
+    const voteResults: Record<string, { id: string; name: string; color: string }[]>  = {}; // { 'targetId': [{ id, name, color }] }
     
     for (const [voterId, target] of Object.entries(this.meeting.votes)) {
       tallies[target] = (tallies[target] || 0) + 1;

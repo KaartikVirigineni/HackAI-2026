@@ -1,6 +1,6 @@
 "use server";
 
-import { connectToDatabase, User } from "@/lib/mongodb";
+import { connectToDatabase, User } from "@/app/lib/mongodb";
 
 export async function getUserProfile(username: string) {
   try {

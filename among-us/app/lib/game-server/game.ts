@@ -8,12 +8,14 @@ export interface RoleTask {
   counter?: string;
 }
 
-export type Team = 'red' | 'blue';
+export type Team = 'red' | 'blue' | 'pending';
 
 export interface Role {
   team: Team;
   A: RoleTask;
   B: RoleTask;
+  C?: RoleTask;
+  [key: string]: any;
 }
 
 export const ROLES: Record<string, Role> = {
@@ -145,15 +147,13 @@ interface Player {
   color: string;
   isGhost: boolean;
   abilityCooldown: number;
-  tasks: {
-    A: PlayerTask;
-    B: PlayerTask;
-  };
+  tasks: Record<string, PlayerTask>;
+  charges?: number;
 }
 
 export interface TaskHistoryEntry {
   role: string;
-  taskKey: 'A' | 'B';
+  taskKey: string;
   time: number;
 }
 

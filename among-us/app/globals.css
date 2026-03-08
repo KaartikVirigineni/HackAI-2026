@@ -90,3 +90,51 @@ input:-webkit-autofill:active{
 ::-webkit-scrollbar-thumb:hover {
   background: #00ff66;
 }
+
+/* LiveKit UI Overrides to fix overflow in sidebar */
+.lk-room-container,
+.lk-audio-conference {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.lk-control-bar {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: space-evenly !important;
+  padding: 0.25rem !important;
+  gap: 0.25rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.lk-button-group,
+.lk-button-group-container {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.25rem !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.lk-button {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  padding: 0.25rem 0.5rem !important;
+}
+
+.lk-button svg {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+}
+
+.lk-disconnect-button {
+  flex: 0 0 auto !important;
+  padding: 0.25rem 0.5rem !important;
+}

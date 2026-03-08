@@ -17,6 +17,9 @@ export default function CyberHome() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [leaderboard, setLeaderboard] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Game entry state
+  const [teamCode, setTeamCode] = useState('');
 
   useEffect(() => {
     // Basic auth check
@@ -156,22 +159,81 @@ export default function CyberHome() {
         </header>
 
         {/* Middle Section: Actions */}
-        <div className="flex flex-col md:flex-row justify-center gap-8 mb-20 relative px-4">
+        <div className="flex flex-col lg:flex-row justify-center gap-6 mb-20 relative px-4 text-center">
           <div className="absolute inset-0 bg-cyber-blue rounded-full filter blur-[150px] opacity-10 animate-pulse w-full max-w-2xl h-64 mx-auto top-1/2 -translate-y-1/2"></div>
           
-          {/* Action 1: Learn module */}
-          <button 
+          {/* Action 1: Play Phishing Pier */}
+          <div className="flex-1 max-w-sm mx-auto w-full relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-red p-6 sm:p-8 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(255,0,60,0.4)] duration-300 flex flex-col items-center justify-between">
+            <div className="absolute inset-0 bg-linear-to-br from-cyber-red/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+            
+            <div className="relative z-10 flex flex-col items-center gap-4 w-full">
+              <div className="w-16 h-16 rounded-full bg-cyber-red/10 border border-cyber-red flex items-center justify-center text-cyber-red mb-2 group-hover:bg-cyber-red group-hover:text-cyber-dark transition-colors duration-300 shadow-[0_0_15px_rgba(255,0,60,0.2)]">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </div>
+              <h2 className="text-2xl font-bold font-orbitron tracking-widest uppercase text-cyber-red group-hover:text-glow-red transition-all duration-300">
+                Play
+              </h2>
+              <p className="text-sm text-gray-400 mb-4 h-10">
+                Enter Phishing Pier. Join by code or create a lobby.
+              </p>
+              
+              <div className="w-full flex flex-col gap-3 relative z-20">
+                <div className="flex gap-2 w-full">
+                  <input 
+                    type="text" 
+                    placeholder="CODE" 
+                    maxLength={6}
+                    value={teamCode}
+                    onChange={(e) => setTeamCode(e.target.value.toUpperCase())}
+                    className="flex-1 min-w-0 bg-cyber-dark/80 border border-cyber-red/50 text-cyber-red px-3 py-2 rounded focus:outline-none focus:border-cyber-red focus:shadow-[0_0_10px_rgba(255,0,60,0.2)] font-mono tracking-widest text-center"
+                  />
+                  <button 
+                    onClick={() => {
+                       if (teamCode.trim().length > 0) {
+                         router.push(`/cybermates?join=${teamCode.trim()}`);
+                       }
+                    }}
+                    onMouseEnter={playHover}
+                    disabled={!teamCode.trim()}
+                    className="shrink-0 bg-cyber-red/20 text-cyber-red border border-cyber-red hover:bg-cyber-red hover:text-white px-4 py-2 rounded font-bold font-orbitron text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    JOIN
+                  </button>
+                </div>
+                
+                <div className="flex items-center">
+                  <hr className="flex-1 border-gray-700" />
+                  <span className="px-3 text-[10px] text-gray-500 font-bold uppercase">or</span>
+                  <hr className="flex-1 border-gray-700" />
+                </div>
+                
+                <button 
+                  onClick={() => router.push(`/cybermates?create=true`)}
+                  onMouseEnter={playHover}
+                  className="w-full bg-cyber-red/10 text-white border border-cyber-red hover:bg-cyber-red hover:text-white hover:shadow-[0_0_15px_rgba(255,0,60,0.5)] py-2 rounded font-bold font-orbitron tracking-widest text-sm transition-all"
+                >
+                  CREATE LOBBY
+                </button>
+              </div>
+            </div>
+            {/* Animated corner borders */}
+            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyber-red opacity-50 group-hover:opacity-100 transition-opacity m-2 pointer-events-none"></div>
+            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyber-red opacity-50 group-hover:opacity-100 transition-opacity m-2 pointer-events-none"></div>
+          </div>
+          
+          {/* Action 2: Learn module */}
+          <div 
             onMouseEnter={playHover}
             onClick={() => router.push('/learn')}
-            className="flex-1 max-w-md relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-blue p-8 sm:p-10 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(0,243,255,0.4)] duration-300"
+            className="flex-1 max-w-sm mx-auto w-full relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-blue p-6 sm:p-8 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(0,243,255,0.4)] duration-300 cursor-pointer flex flex-col items-center"
           >
-            <div className="absolute inset-0 bg-linear-to-br from-cyber-blue/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-linear-to-br from-cyber-blue/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             
-            <div className="relative z-10 flex flex-col items-center gap-4 text-center">
-              <div className="w-16 h-16 rounded-full bg-cyber-blue/10 border border-cyber-blue flex items-center justify-center text-cyber-blue mb-2 group-hover:bg-cyber-blue group-hover:text-cyber-dark transition-colors duration-300">
+            <div className="relative z-10 flex flex-col items-center gap-4 text-center mt-2">
+              <div className="w-16 h-16 rounded-full bg-cyber-blue/10 border border-cyber-blue flex items-center justify-center text-cyber-blue mb-2 group-hover:bg-cyber-blue group-hover:text-cyber-dark transition-colors duration-300 shadow-[0_0_15px_rgba(0,243,255,0.2)]">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold font-orbitron tracking-widest uppercase text-cyber-blue group-hover:text-glow-blue transition-all duration-300">
+              <h2 className="text-2xl font-bold font-orbitron tracking-widest uppercase text-cyber-blue group-hover:text-glow-blue transition-all duration-300">
                 Learn
               </h2>
               <p className="text-sm text-gray-400">
@@ -179,23 +241,23 @@ export default function CyberHome() {
               </p>
             </div>
             {/* Animated corner borders */}
-            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyber-blue opacity-50 group-hover:opacity-100 transition-opacity m-2"></div>
-            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyber-blue opacity-50 group-hover:opacity-100 transition-opacity m-2"></div>
-          </button>
+            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-cyber-blue opacity-50 group-hover:opacity-100 transition-opacity m-2 pointer-events-none"></div>
+            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-cyber-blue opacity-50 group-hover:opacity-100 transition-opacity m-2 pointer-events-none"></div>
+          </div>
 
-          {/* Action 2: Chat Mentor */}
-          <button 
+          {/* Action 3: Chat Mentor */}
+          <div 
             onMouseEnter={playHover}
             onClick={() => router.push('/chat')}
-            className="flex-1 max-w-md relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-green p-8 sm:p-10 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(0,255,157,0.4)] duration-300"
+            className="flex-1 max-w-sm mx-auto w-full relative group overflow-hidden rounded-2xl bg-cyber-darker border-2 border-cyber-green p-6 sm:p-8 transition-all hover:-translate-y-2 hover:shadow-[0_0_40px_rgba(0,255,157,0.4)] duration-300 cursor-pointer flex flex-col items-center"
           >
-            <div className="absolute inset-0 bg-linear-to-bl from-cyber-green/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-linear-to-bl from-cyber-green/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             
-            <div className="relative z-10 flex flex-col items-center gap-4 text-center">
+            <div className="relative z-10 flex flex-col items-center gap-4 text-center mt-2">
               <div className="w-16 h-16 rounded-full bg-cyber-green/10 border border-cyber-green flex items-center justify-center text-cyber-green mb-2 group-hover:bg-cyber-green group-hover:text-cyber-dark transition-colors duration-300 shadow-[0_0_15px_rgba(0,255,157,0.2)]">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold font-orbitron tracking-widest uppercase text-cyber-green group-hover:text-glow-green transition-all duration-300">
+              <h2 className="text-2xl font-bold font-orbitron tracking-widest uppercase text-cyber-green group-hover:text-glow-green transition-all duration-300">
                 AI Mentor
               </h2>
               <p className="text-sm text-gray-400">
@@ -203,9 +265,9 @@ export default function CyberHome() {
               </p>
             </div>
             {/* Animated corner borders */}
-            <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyber-green opacity-50 group-hover:opacity-100 transition-opacity m-2"></div>
-            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-cyber-green opacity-50 group-hover:opacity-100 transition-opacity m-2"></div>
-          </button>
+            <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-cyber-green opacity-50 group-hover:opacity-100 transition-opacity m-2 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-cyber-green opacity-50 group-hover:opacity-100 transition-opacity m-2 pointer-events-none"></div>
+          </div>
 
         </div>
 

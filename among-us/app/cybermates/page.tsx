@@ -151,7 +151,7 @@ export default function PhishingPier() {
       setTimeout(() => setMeetingState(null), 10000); // clear after 10s
     });
 
-    newSocket.on('game_over', (data: any) => {
+    newSocket.on('game_over', (data: { winner: string; reason: string; eloGained?: number; bonusStr?: string }) => {
       setGameOver(data);
     });
 

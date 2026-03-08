@@ -3,17 +3,11 @@
 import { useState, useEffect } from "react";
 import {
   LiveKitRoom,
-  ParticipantLoop,
-  ParticipantTile,
+  useParticipants,
   ControlBar,
   RoomAudioRenderer,
-  useTracks,
-  ConnectionState,
-  ParticipantContext,
-  TrackToggle,
-  DisconnectButton
+  ConnectionState
 } from "@livekit/components-react";
-import { Track } from "livekit-client";
 import "@livekit/components-styles";
 
 export default function VoiceChat({ roomName = "cyberarena-room", username: propUsername }: { roomName?: string, username?: string }) {
@@ -96,57 +90,59 @@ export default function VoiceChat({ roomName = "cyberarena-room", username: prop
 }
 
 function ParticipantLoopWrapper() {
-  const tracks = useTracks([Track.Source.Microphone]);
+  const participants = useParticipants();
   return (
-    <div className="grid grid-cols-2 gap-2">
-      {tracks.map((track) => (
+    <div className="flex flex-col gap-2">
+      {participants.map((p) => (
         <CustomParticipantTile
-          key={track.participant.identity}
-          trackRef={track}
+          key={p.identity}
+          participant={p}
         />
       ))}
     </div>
   );
 }
 
-function CustomParticipantTile({ trackRef }: { trackRef: any }) {
-  const [isLocallyMuted, setIsLocallyMuted] = useState(false);
-  const isLocal = trackRef.participant.isLocal;
+import { Participant } from "livekit-client";
 
-  // We can't actually mute the track natively via components-react easily without digging into the track object, 
-  // but we can set the volume to 0 to "mute" them locally if they are not the local user.
-  useEffect(() => {
-    if (!isLocal && trackRef.publication?.track) {
-      const audioTrack = trackRef.publication.track as any;
-      if (audioTrack.setVolume) {
-        audioTrack.setVolume(isLocallyMuted ? 0 : 1);
-      }
-    }
-  }, [isLocallyMuted, trackRef.publication, isLocal]);
+function CustomParticipantTile({ participant }: { participant: Participant }) {
+  const isLocal = participant.isLocal;
+  const username = participant.name || participant.identity || "Unknown";
+  const isSpeaking = participant.isSpeaking;
 
   return (
     <div
-      className={`relative !bg-cyber-dark/60 !border !border-cyber-blue/20 !rounded-lg !p-1 !h-20 overflow-hidden cursor-pointer hover:border-cyber-blue/50 transition-colors ${isLocallyMuted && !isLocal ? 'opacity-50' : ''}`}
-      onClick={() => {
-        if (!isLocal) {
-          setIsLocallyMuted(!isLocallyMuted);
-        }
-      }}
-      title={isLocal ? "You" : (isLocallyMuted ? "Unmute user" : "Mute user locally")}
+      className={`relative group flex items-center justify-between bg-cyber-dark/40 border border-cyber-blue/20 rounded-lg p-3 transition-all hover:border-cyber-blue/50 ${isSpeaking ? 'ring-1 ring-cyber-green/50 shadow-[0_0_10px_rgba(0,255,157,0.1)]' : ''}`}
     >
-      <ParticipantTile
-        trackRef={trackRef}
-        className="w-full h-full [&>.lk-participant-metadata]:opacity-100" // Ensure name is always visible
-      />
-      {/* Mute Overlay Icon */}
-      {isLocallyMuted && !isLocal && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none rounded-lg">
-          <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-          </svg>
+      <div className="flex items-center gap-3">
+        {/* Connection status indicator */}
+        <div className={`w-2 h-2 rounded-full ${isSpeaking ? 'bg-cyber-green animate-pulse' : 'bg-gray-600'}`}></div>
+        
+        <div className="flex flex-col">
+          <span className={`text-xs font-orbitron font-bold tracking-wider ${isLocal ? 'text-cyber-blue' : 'text-gray-200'}`}>
+            {username}
+            {isLocal && (
+              <span className="ml-2 text-[8px] bg-cyber-blue/20 text-cyber-blue px-1 rounded border border-cyber-blue/30 uppercase">You</span>
+            )}
+          </span>
+          <span className="text-[9px] text-gray-500 uppercase font-mono">
+            {participant.isMicrophoneEnabled ? "Mic Active" : "No Mic"}
+          </span>
         </div>
-      )}
+      </div>
+
+      {/* Mic Status Icon */}
+      <div className="opacity-60">
+         {participant.isMicrophoneEnabled ? (
+            <svg className="w-4 h-4 text-cyber-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+            </svg>
+         ) : (
+            <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
+         )}
+      </div>
     </div>
   );
 }

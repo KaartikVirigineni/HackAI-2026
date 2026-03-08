@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
 
   const at = new AccessToken(apiKey, apiSecret, { 
     identity: username,
+    name: username,
     ttl: "24h",
   });
 

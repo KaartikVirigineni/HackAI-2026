@@ -174,6 +174,10 @@ app.prepare().then(() => {
     socket.on('broadcast_flashcard', ({ roomId, flashcard, reveal }) => {
       socket.to(roomId).emit('flashcard_sync', { flashcard, reveal });
     });
+
+    socket.on('broadcast_lesson', ({ roomId, lesson, answers, revealed }) => {
+      socket.to(roomId).emit('lesson_sync', { lesson, answers, revealed });
+    });
   });
 
   const PORT = process.env.PORT || 3000;

@@ -18,18 +18,31 @@ export async function GET(req: NextRequest) {
   try {
     const prompt = `
       You are an expert cybersecurity instructor in a futuristic, neon simulation called "CyberArena". 
-      Your task is to generate ONE single educational flashcard about a Cybersecurity concept.
+      Your task is to generate ONE comprehensive educational lesson about a Cybersecurity concept.
       
       Instructions: ${instructions}
+      The lesson content should be substantial, providing about 15 minutes of reading material. 
+      It should be engaging, informative, and include practical examples.
+      Break the content into logical sections with clear headings.
 
       It MUST be strictly formatted as a JSON object with the following schema:
       {
-        "id": "A unique random string ID for this card",
-        "topic": "The general topic (e.g., 'Phishing', 'Cryptography', 'Network Security')",
-        "question": "A concise, engaging question or scenario.",
-        "answer": "The correct answer or explanation.",
-        "difficulty": "Beginner, Intermediate, or Advanced"
+        "id": "A unique random string ID for this lesson",
+        "topic": "The general topic (e.g., 'Advanced Phishing Techniques', 'Zero Trust Architecture')",
+        "title": "A compelling title for the lesson",
+        "content": "The long-form educational content in Markdown format. Use headings (##), bolding (**), and lists to structure it effectively.",
+        "difficulty": "Beginner, Intermediate, or Advanced",
+        "questions": [
+          {
+            "id": "q1",
+            "question": "A challenging MCQ question based on the content above.",
+            "options": ["Option A", "Option B", "Option C", "Option D"],
+            "correctAnswerIndex": 0,
+            "explanation": "A detailed explanation of why the answer is correct and why others are not."
+          }
+        ]
       }
+      Generate at least 3-4 distinct MCQs in the 'questions' array.
     `;
 
     const text = await generateJsonContent(prompt);

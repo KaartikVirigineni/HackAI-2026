@@ -1,0 +1,11 @@
+Cybersecurity 101: Foundations of Cyber Defense
+Instructor: Agent X
+Course Overview: This course covers the fundamental principles of cybersecurity, including threat modeling, basic cryptography, network defense strategies, and incident response.
+Key Topics for Midterm Exam:
+1. The CIA Triad (Confidentiality, Integrity, Availability)
+2. Difference between Symmetric and Asymmetric Encryption
+3. Types of Malware: Ransomware, Spyware, Trojans, Worms
+4. Social Engineering: Phishing, Spear Phishing, Whaling
+5. Basic Network Defense: Firewalls (Packet filtering vs Stateful), Intrusion Detection Systems (IDS)
+
+Students must be able to define these concepts and apply them to hypothetical security breach scenarios.

@@ -8,11 +8,14 @@ import { GameEngine } from '@/components/game/Engine';
 import { TaskManager } from '@/components/game/TaskManager';
 import { MissionDebrief } from '@/components/game/MissionDebrief';
 import { TouchControls } from '@/components/game/TouchControls';
+import { GameAudio } from '@/components/game/GameAudio';
 
 export default function PhishingPier() {
   const searchParams = useSearchParams();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [controlPercent, setControlPercent] = useState(50);
+  const engineRef = useRef<GameEngine | null>(null);
+  const audioRef = useRef<GameAudio | null>(null);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [socket, setSocket] = useState<any>(null);
   const [players, setPlayers] = useState<Record<string, { role?: string, team?: string, isGhost?: boolean, x: number, y: number, color: string, name: string, tasks?: Record<string, {x: number, y: number, isComplete: boolean}> }>>({});
@@ -132,6 +135,7 @@ export default function PhishingPier() {
           setGameStartTime(Date.now() - data.elapsedTime);
           setGameDurationLimit(data.durationLimit);
        }
+       audioRef.current?.gameStart();
     });
 
     newSocket.on('effects_update', (effects: Record<string, boolean>) => {
@@ -147,6 +151,7 @@ export default function PhishingPier() {
 
     newSocket.on('logic_bomb_started', (lb: {active: boolean, endTime: number, defusers: string[]}) => {
        setLogicBomb(lb);
+       audioRef.current?.startLogicBombTick();
     });
 
     newSocket.on('logic_bomb_updated', (defusers: string[]) => {
@@ -155,6 +160,7 @@ export default function PhishingPier() {
 
     newSocket.on('logic_bomb_defused', () => {
        setLogicBomb({active: false, endTime: 0, defusers: []});
+       audioRef.current?.bombDefused();
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -181,11 +187,13 @@ export default function PhishingPier() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newSocket.on('meeting_started', (data: any) => {
       setMeetingState({ active: true, reason: data.reason, votes: {} });
+      audioRef.current?.emergencyMeeting();
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newSocket.on('vote_update', (votes: any) => {
       setMeetingState(prev => prev ? { ...prev, votes } : null);
+      audioRef.current?.voteCast();
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -205,6 +213,13 @@ export default function PhishingPier() {
 
     newSocket.on('game_over', (data: { winner: string; reason: string; eloGained?: number; bonusStr?: string }) => {
       setGameOver(data);
+      audioRef.current?.stopLogicBombTick();
+      audioRef.current?.stopFootsteps();
+      if (data.winner === 'blue') {
+        audioRef.current?.victory();
+      } else {
+        audioRef.current?.defeat();
+      }
     });
 
     newSocket.on('join_error', (msg: string) => {

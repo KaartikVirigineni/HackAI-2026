@@ -53,8 +53,8 @@ export default function LearnPage() {
       } else {
          throw new Error("Received malformed data packet.");
       }
-    } catch (err: any) {
-      setError(err.message || "Unknown error parsing data stream.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error parsing data stream.");
     } finally {
       setLoading(false);
     }
@@ -281,7 +281,7 @@ export default function LearnPage() {
                          Training Complete
                        </h2>
                        <p className="text-cyber-green/80 text-lg max-w-2xl mx-auto">
-                         You've absorbed the intelligence. Now, test your reaction time and knowledge under pressure in the Live Fire Trivia Simulation.
+                         You&apos;ve absorbed the intelligence. Now, test your reaction time and knowledge under pressure in the Live Fire Trivia Simulation.
                        </p>
                        <div className="pt-4">
                          <Link 

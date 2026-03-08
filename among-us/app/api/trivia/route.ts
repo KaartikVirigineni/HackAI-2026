@@ -1,21 +1,12 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
-
-const apiKey = process.env.GEMINI_API_KEY || "";
-const genAI = new GoogleGenerativeAI(apiKey);
+import { ai } from "@/app/lib/gemini";
 
 export async function GET() {
-  if (!apiKey) {
+  if (!process.env.GEMINI_API_KEY) {
     return NextResponse.json({ error: "Missing GEMINI_API_KEY environment variable" }, { status: 500 });
   }
 
   try {
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
-      generationConfig: {
-         responseMimeType: "application/json",
-      }
-    });
 
     const prompt = `
       You are an expert cybersecurity instructor running a rapid-fire "Trivia" simulation in a futuristic, neon environment called "CyberArena".
@@ -39,8 +30,14 @@ export async function GET() {
       Generate exactly 5 question objects in this array format.
     `;
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+      }
+    });
+    const text = response.text;
 
     return new NextResponse(text, {
       status: 200,

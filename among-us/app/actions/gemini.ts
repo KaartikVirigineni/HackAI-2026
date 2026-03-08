@@ -1,13 +1,11 @@
 "use server";
 
-import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+import { ai } from "@/app/lib/gemini";
 
 export async function generateCyberQuestion() {
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3-flash-lite",
       contents: "Generate a short, single-sentence question about cybersecurity concepts, suitable for an interview or study session. Do not include the answer. Return only the question itself.",
     });
 

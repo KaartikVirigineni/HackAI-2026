@@ -1,5 +1,9 @@
 # 🔐 CrashOut
 
+## 🔗Links
+Devpost: https://devpost.com/software/cyberarena
+Youtube: https://www.youtube.com/watch?v=0Ccadf0KqAI
+
 > **Master Cybersecurity Through Play** — A gamified, multiplayer cybersecurity education platform built for the next generation of defenders.
 
 CrashOut is a real-time, cyberpunk-themed web application that teaches cybersecurity through interactive gameplay, live trivia challenges, AI-powered mentoring, and a co-op Phishing Pier simulation. Compete on the global leaderboard, earn ranks, and level up your security knowledge.
